@@ -119,10 +119,10 @@ cleaned_texts = {pdf: clean_text(text) for pdf, text in pdf_texts.items()}
 
 # ===============================
 # 4. CHUNKING TEKS
+# Splits text into smaller chunks.
 # ===============================
 
-def chunk_text(text, chunk_size=500):
-    """Splits text into smaller chunks."""
+def chunk_text(text, chunk_size=100):
     sentences = sent_tokenize(text)
     chunks = []
     current_chunk = ""
@@ -150,11 +150,11 @@ print(f"Total chunks: {len(all_chunks)}")
 # ===============================
 
 # Load Sentence Transformer model (multilingual)
-model_name = 'firqaaa/indo-sentence-bert-base'  # Replace with the actual model
+model_name = 'paraphrase-multilingual-mpnet-base-v2'  # Replace with the actual model
 model = SentenceTransformer(model_name)
 
 # Generate embeddings for the chunks
-embeddings = model.encode(all_chunks)
+embeddings = model.encode(all_chunks, show_progress_bar=True)
 
 """# SAVING DATA"""
 
@@ -211,7 +211,6 @@ except Exception as e:
 
 # --- Question Answering ---
 def answer_question(question, embeddings, chunks, top_n=3):
-    """Answers a question based on the text chunks."""
     question_embedding = model.encode([question])[0]
     similarities = cosine_similarity([question_embedding], embeddings)[0]
     top_indices = np.argsort(similarities)[::-1][:top_n]
@@ -226,7 +225,6 @@ def answer_question(question, embeddings, chunks, top_n=3):
     return context
 
 def post_process_answer(answer):
-    """Formats the answer into a bulleted list."""
     # Split the answer into sentences
     sentences = sent_tokenize(answer)
 
@@ -237,6 +235,22 @@ def post_process_answer(answer):
 
 # --- Example Usage ---
 question = "Jelaskan komponen pembinaan dan pengembangan prestasi?"  # More focused question
+raw_answer = answer_question(question, embeddings, all_chunks, top_n=3)
+processed_answer = post_process_answer(raw_answer)
+
+print(f"Pertanyaan: {question}")
+print(f"Jawaban:\n{processed_answer}")
+
+# --- Example Usage ---
+question = "Transparansi keuangan?"  # More focused question
+raw_answer = answer_question(question, embeddings, all_chunks, top_n=3)
+processed_answer = post_process_answer(raw_answer)
+
+print(f"Pertanyaan: {question}")
+print(f"Jawaban:\n{processed_answer}")
+
+# --- Example Usage ---
+question = "Laporan keuangan dilihat orang lain?"  # More focused question
 raw_answer = answer_question(question, embeddings, all_chunks, top_n=3)
 processed_answer = post_process_answer(raw_answer)
 
