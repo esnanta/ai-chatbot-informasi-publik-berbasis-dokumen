@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import json
@@ -8,6 +9,22 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
 app = FastAPI()
+
+# --- CORS Configuration (CORRECTED) ---
+origins = [
+    "http://localhost",  # Allow your Yii2 app's origin
+    "http://localhost:80", #If use port
+    # "http://your-domain.com",  # Add other origins as needed (for production)
+    "*", # Allow all origins (for development ONLY - not for production!)
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST"],  # IMPORTANT: Only allow POST (for security)
+    allow_headers=["Content-Type"],  # IMPORTANT: Only allow Content-Type
+)
 
 # --- Configuration ---
 BASE_DIR = "knowledge_base"  # Directory containing all data files
@@ -74,7 +91,9 @@ class QuestionRequest(BaseModel):
 async def ask_chatbot(request: QuestionRequest):
     """API endpoint to answer questions."""
     try:
+        print(f"Received request: {request}")  # Debugging
         question = request.question
+        print(f"Extracted question: {question}")  # Debugging
         if not question:
             raise HTTPException(status_code=400, detail="No question provided")
 
