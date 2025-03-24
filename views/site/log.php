@@ -37,12 +37,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'downvote',
             [
                 'class' => ActionColumn::class,
-                'template' => '{view}', // Hanya menampilkan tombol View
+                'template' => '{view}',
                 'urlCreator' => function ($action, QaLog $model, $key, $index, $column) {
                     if ($action === 'view') {
                         return Url::to(['/qa-log/view', 'id' => $model->id]);
                     }
-                    return '#'; // Mencegah error jika ada aksi lain
+                    return '#';
                 },
             ],
         ],
