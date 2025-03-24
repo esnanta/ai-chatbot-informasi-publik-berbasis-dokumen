@@ -75,18 +75,39 @@ $(document).ready(function() {
     });
 
     // Handle Upvote
+    var csrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    // Handle Upvote
     $('#upvote-btn').on('click', function() {
         var id = $('#answer-id').val();
-        $.post('index.php?r=site/upvote', {id: id}, function(response) {
-            alert('Upvote berhasil!');
+        $.post({
+            url: 'site/upvote',
+            data: {id: id, _csrf: csrfToken},
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert('Upvote berhasil! Total Upvotes: ' + response.upvote);
+                } else {
+                    alert('Upvote gagal!');
+                }
+            }
         });
     });
 
     // Handle Downvote
     $('#downvote-btn').on('click', function() {
         var id = $('#answer-id').val();
-        $.post('index.php?r=site/downvote', {id: id}, function(response) {
-            alert('Downvote berhasil!');
+        $.post({
+            url: 'site/downvote',
+            data: {id: id, _csrf: csrfToken},
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    alert('Downvote berhasil! Total Downvotes: ' + response.downvote);
+                } else {
+                    alert('Downvote gagal!');
+                }
+            }
         });
     });
 });

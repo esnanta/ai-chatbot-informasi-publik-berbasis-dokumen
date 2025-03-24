@@ -136,26 +136,36 @@ class SiteController extends Controller
 
     public function actionUpvote()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $id = Yii::$app->request->post('id');
         if ($id) {
             $qaLog = QaLog::findOne($id);
             if ($qaLog) {
                 $qaLog->upvote += 1;
-                $qaLog->save();
+                if ($qaLog->save()) {
+                    return ['success' => true, 'upvote' => $qaLog->upvote];
+                }
             }
         }
+        return ['success' => false];
     }
 
     public function actionDownvote()
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
         $id = Yii::$app->request->post('id');
         if ($id) {
             $qaLog = QaLog::findOne($id);
             if ($qaLog) {
                 $qaLog->downvote += 1;
-                $qaLog->save();
+                if ($qaLog->save()) {
+                    return ['success' => true, 'downvote' => $qaLog->downvote];
+                }
             }
         }
+        return ['success' => false];
     }
 
     public function actionLog()
