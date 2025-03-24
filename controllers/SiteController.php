@@ -5,6 +5,7 @@ namespace app\controllers;
 
 use app\models\QaLog;
 use app\models\QaLogSearch;
+use app\models\Suggestion;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -178,6 +179,28 @@ class SiteController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+
+    public function actionSuggestion($query = null)
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        if ($query) {
+            $suggestions = Suggestion::find()
+                ->where(['like', 'question', $query])
+                ->limit(5)
+                ->all();
+
+            return array_map(function ($suggestion) {
+                return [
+                    'id' => $suggestion->id,
+                    'question' => $suggestion->question,
+                ];
+            }, $suggestions);
+        }
+
+        return [];
+    }
+
     /**
      * Login action.
      *

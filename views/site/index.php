@@ -19,7 +19,16 @@ $this->title = 'AI Chatbot';
         'enableAjaxValidation' => false, // AJAX ditangani secara manual
     ]); ?>
 
-    <?= $form->field($model, 'question')->textInput(['autofocus' => true]) ?>
+    <!-- ✅ DITAMBAHKAN: Input untuk pencarian dengan fitur autocomplete -->
+    <div style="position: relative;">
+        <?= $form->field($model, 'question')->textInput([
+            'id' => 'question-input',
+            'autofocus' => true,
+            'placeholder' => 'Ketik pertanyaan...',
+            'autocomplete' => 'off'
+        ]) ?>
+        <div id="suggestions"></div> <!-- ✅ DITAMBAHKAN: Tempat menampilkan rekomendasi -->
+    </div>
 
     <div class="form-group">
         <?= Html::submitButton('Ask', ['class' => 'btn btn-primary']) ?>
@@ -43,6 +52,38 @@ $this->title = 'AI Chatbot';
 <?php
 $this->registerJs(<<<JS
 $(document).ready(function() {
+
+    // ✅ DITAMBAHKAN: Fitur Autocomplete untuk pertanyaan
+    $("#question-input").on("keyup", function() {
+        let query = $(this).val();
+        
+        if (query.length < 3) {
+            $("#suggestions").html("").hide();
+            return;
+        }
+
+        $.get("site/suggestion", { query: query }, function(data) {
+            let suggestionBox = $("#suggestions");
+            suggestionBox.html("").show();
+
+            data.forEach(function(item) {
+                let div = $("<div>").text(item.question).addClass("suggestion-item");
+                div.on("click", function() {
+                    $("#question-input").val(item.question);
+                    suggestionBox.hide();
+                });
+                suggestionBox.append(div);
+            });
+        }, "json");
+    });
+
+    // ✅ DITAMBAHKAN: Menutup rekomendasi saat klik di luar
+    $(document).on("click", function(event) {
+        if (!$(event.target).closest("#question-input, #suggestions").length) {
+            $("#suggestions").hide();
+        }
+    });
+
     // Handle Form Submit
     $('#chatbot-form').on('submit', function(e) {
         e.preventDefault();
@@ -74,10 +115,9 @@ $(document).ready(function() {
         });
     });
 
-    // Handle Upvote
+    // ✅ DITAMBAHKAN: Handle Upvote
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
 
-    // Handle Upvote
     $('#upvote-btn').on('click', function() {
         var id = $('#answer-id').val();
         $.post({
@@ -94,7 +134,7 @@ $(document).ready(function() {
         });
     });
 
-    // Handle Downvote
+    // ✅ DITAMBAHKAN: Handle Downvote
     $('#downvote-btn').on('click', function() {
         var id = $('#answer-id').val();
         $.post({
@@ -110,7 +150,31 @@ $(document).ready(function() {
             }
         });
     });
+
 });
 JS
 );
 ?>
+
+<style>
+    /* ✅ DITAMBAHKAN: Styling untuk kotak saran */
+    #suggestions {
+        border: 1px solid #ddd;
+        max-width: 400px;
+        background: #fff;
+        position: absolute;
+        z-index: 1000;
+        display: none;
+        border-radius: 5px;
+        overflow: hidden;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .suggestion-item {
+        padding: 8px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+    .suggestion-item:hover {
+        background: #f2f2f2;
+    }
+</style>
