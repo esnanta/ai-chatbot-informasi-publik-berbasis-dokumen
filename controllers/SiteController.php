@@ -2,10 +2,11 @@
 
 namespace app\controllers;
 
-use app\models\ChatbotForm;
+
+use app\models\QaLog;
+use app\models\QaLogSearch;
 use Yii;
 use yii\filters\AccessControl;
-use yii\httpclient\Exception;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -37,6 +38,8 @@ class SiteController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
+                    'upvote' => ['post'],
+                    'downvote' => ['post']
                 ],
             ],
         ];
@@ -64,19 +67,44 @@ class SiteController extends Controller
         return parent::beforeAction($action);
     }
 
-    /**
-     * Displays the chatbot UI and handles the question submission.
-     * @return string
-     * @throws Exception
-     */
+
     public function actionIndex()
     {
-        $model = new ChatbotForm();
-        $model->question = "Jelaskan komponen pembinaan dan pengembangan prestasi?";
+        $model = new QaLog();
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->validate()) {
-            $answer = $this->askFastAPI($model->question);
+
+            // Cek apakah pertanyaan sudah ada di database
+            $existingQaLog = QaLog::find()->where(['question' => $model->question])->one();
+
+            if ($existingQaLog) {
+                $answer = $existingQaLog->answer;
+                $qaLog = $existingQaLog; // Simpan objek agar ID bisa dikembalikan
+            } else {
+                // Jika belum ada, panggil API untuk mendapatkan jawaban
+                $answer = $this->askFastAPI($model->question);
+
+                if ($answer) {
+                    $qaLog = new QaLog();
+                    $qaLog->question = $model->question;
+                    $qaLog->answer = $answer;
+
+                    if ($qaLog->save()) {
+                        Yii::debug("Jawaban baru disimpan dengan ID: " . $qaLog->id, __METHOD__);
+                    } else {
+                        Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
+                    }
+                }
+            }
+
+            // Format respons JSON agar ID bisa digunakan untuk upvote/downvote
             Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['answer' => $answer];
+            return [
+                'id' => $qaLog->id,  // Kirim ID jawaban dari database
+                'answer' => $answer,
+                'upvote' => $qaLog->upvote ?? 0,
+                'downvote' => $qaLog->downvote ?? 0,
+            ];
         }
 
         return $this->render('index', [
@@ -90,31 +118,66 @@ class SiteController extends Controller
         $client = new Client();
 
         try {
-            // Explicitly JSON encode the data
-            $jsonData = json_encode(['question' => $question]);
-
             $response = $client->createRequest()
                 ->setMethod('POST')
                 ->setUrl($api_url)
-                ->addHeaders(['content-type' => 'application/json']) // Set content type
-                ->setContent($jsonData) // Set the JSON data as content
+                ->addHeaders(['content-type' => 'application/json'])
+                ->setContent(json_encode(['question' => $question]))
                 ->send();
-            if ($response->isOk) {
-                $data = $response->getData();
-                return $data['answer'] ?? 'No answer received.';
-            } else {
-                $errorDetails = $response->statusCode . ' - ' . $response->content;
-                Yii::error('FastAPI request failed: ' . $errorDetails);
-                return 'Error: API request failed (status code ' . $response->statusCode . '). See logs.';
-            }
 
+            if ($response->isOk) {
+                return $response->getData()['answer'] ?? 'Tidak ada jawaban.';
+            }
         } catch (\Exception $e) {
-            Yii::error('Exception during FastAPI request: ' . $e->getMessage());
-            return 'Error: An exception occurred during the API request.';
+            Yii::error('FastAPI request failed: ' . $e->getMessage());
         }
+        return 'Terjadi kesalahan saat mengambil jawaban.';
     }
 
+    public function actionUpvote()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
 
+        $id = Yii::$app->request->post('id');
+        if ($id) {
+            $qaLog = QaLog::findOne($id);
+            if ($qaLog) {
+                $qaLog->upvote += 1;
+                if ($qaLog->save()) {
+                    return ['success' => true, 'upvote' => $qaLog->upvote];
+                }
+            }
+        }
+        return ['success' => false];
+    }
+
+    public function actionDownvote()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $id = Yii::$app->request->post('id');
+        if ($id) {
+            $qaLog = QaLog::findOne($id);
+            if ($qaLog) {
+                $qaLog->downvote += 1;
+                if ($qaLog->save()) {
+                    return ['success' => true, 'downvote' => $qaLog->downvote];
+                }
+            }
+        }
+        return ['success' => false];
+    }
+
+    public function actionLog()
+    {
+        $searchModel = new QaLogSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+
+        return $this->render('log', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
     /**
      * Login action.
      *
