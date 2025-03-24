@@ -1,19 +1,20 @@
 <?php
 
-use app\models\QaLog;
+use app\models\Suggestion;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 /** @var yii\web\View $this */
-/** @var app\models\QaLogSearch $searchModel */
+/** @var app\models\SuggestionSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = Yii::t('app', 'Logs');
+$this->title = Yii::t('app', 'Suggestions');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="qa-log-index">
+<div class="suggestion-index">
+
     <div class="row">
         <div class="col-md-10">
             <h1><?= Html::encode($this->title) ?></h1>
@@ -23,8 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
     </div>
 
-
     <?php Pjax::begin(); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -32,15 +33,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             'question:ntext',
-            'answer:ntext',
-            'upvote',
-            'downvote',
+            'category:ntext',
+            'description:ntext',
+            'created_at',
             [
                 'class' => ActionColumn::class,
                 'template' => '{view}',
-                'urlCreator' => function ($action, QaLog $model, $key, $index, $column) {
+                'urlCreator' => function ($action, Suggestion $model, $key, $index, $column) {
                     if ($action === 'view') {
-                        return Url::to(['/qa-log/view', 'id' => $model->id]);
+                        return Url::to(['view', 'id' => $model->id]);
                     }
                     return '#';
                 },
