@@ -38,6 +38,8 @@ class SiteController extends Controller
                 'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
+                    'upvote' => ['post'],
+                    'downvote' => ['post']
                 ],
             ],
         ];
@@ -69,17 +71,40 @@ class SiteController extends Controller
     public function actionIndex()
     {
         $model = new QaLog();
-        $model->question = "Jelaskan komponen pembinaan dan pengembangan prestasi?";
+
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->validate()) {
-            $answer = $this->askFastAPI($model->question);
-            if ($answer) {
-                $qaLog = new QaLog();
-                $qaLog->question = $model->question;
-                $qaLog->answer = $answer;
-                $qaLog->save();
+
+            // Cek apakah pertanyaan sudah ada di database
+            $existingQaLog = QaLog::find()->where(['question' => $model->question])->one();
+
+            if ($existingQaLog) {
+                $answer = $existingQaLog->answer;
+                $qaLog = $existingQaLog; // Simpan objek agar ID bisa dikembalikan
+            } else {
+                // Jika belum ada, panggil API untuk mendapatkan jawaban
+                $answer = $this->askFastAPI($model->question);
+
+                if ($answer) {
+                    $qaLog = new QaLog();
+                    $qaLog->question = $model->question;
+                    $qaLog->answer = $answer;
+
+                    if ($qaLog->save()) {
+                        Yii::debug("Jawaban baru disimpan dengan ID: " . $qaLog->id, __METHOD__);
+                    } else {
+                        Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
+                    }
+                }
             }
+
+            // Format respons JSON agar ID bisa digunakan untuk upvote/downvote
             Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['answer' => $answer];
+            return [
+                'id' => $qaLog->id,  // Kirim ID jawaban dari database
+                'answer' => $answer,
+                'upvote' => $qaLog->upvote ?? 0,
+                'downvote' => $qaLog->downvote ?? 0,
+            ];
         }
 
         return $this->render('index', [
@@ -107,6 +132,30 @@ class SiteController extends Controller
             Yii::error('FastAPI request failed: ' . $e->getMessage());
         }
         return 'Terjadi kesalahan saat mengambil jawaban.';
+    }
+
+    public function actionUpvote()
+    {
+        $id = Yii::$app->request->post('id');
+        if ($id) {
+            $qaLog = QaLog::findOne($id);
+            if ($qaLog) {
+                $qaLog->upvote += 1;
+                $qaLog->save();
+            }
+        }
+    }
+
+    public function actionDownvote()
+    {
+        $id = Yii::$app->request->post('id');
+        if ($id) {
+            $qaLog = QaLog::findOne($id);
+            if ($qaLog) {
+                $qaLog->downvote += 1;
+                $qaLog->save();
+            }
+        }
     }
 
     public function actionLog()
