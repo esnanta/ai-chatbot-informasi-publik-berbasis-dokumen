@@ -2,10 +2,11 @@
 
 namespace app\controllers;
 
-use app\models\ChatbotForm;
+
+use app\models\QaLog;
+use app\models\QaLogSearch;
 use Yii;
 use yii\filters\AccessControl;
-use yii\httpclient\Exception;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
@@ -64,17 +65,19 @@ class SiteController extends Controller
         return parent::beforeAction($action);
     }
 
-    /**
-     * Displays the chatbot UI and handles the question submission.
-     * @return string
-     * @throws Exception
-     */
+
     public function actionIndex()
     {
-        $model = new ChatbotForm();
+        $model = new QaLog();
         $model->question = "Jelaskan komponen pembinaan dan pengembangan prestasi?";
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->validate()) {
             $answer = $this->askFastAPI($model->question);
+            if ($answer) {
+                $qaLog = new QaLog();
+                $qaLog->question = $model->question;
+                $qaLog->answer = $answer;
+                $qaLog->save();
+            }
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ['answer' => $answer];
         }
@@ -90,31 +93,32 @@ class SiteController extends Controller
         $client = new Client();
 
         try {
-            // Explicitly JSON encode the data
-            $jsonData = json_encode(['question' => $question]);
-
             $response = $client->createRequest()
                 ->setMethod('POST')
                 ->setUrl($api_url)
-                ->addHeaders(['content-type' => 'application/json']) // Set content type
-                ->setContent($jsonData) // Set the JSON data as content
+                ->addHeaders(['content-type' => 'application/json'])
+                ->setContent(json_encode(['question' => $question]))
                 ->send();
-            if ($response->isOk) {
-                $data = $response->getData();
-                return $data['answer'] ?? 'No answer received.';
-            } else {
-                $errorDetails = $response->statusCode . ' - ' . $response->content;
-                Yii::error('FastAPI request failed: ' . $errorDetails);
-                return 'Error: API request failed (status code ' . $response->statusCode . '). See logs.';
-            }
 
+            if ($response->isOk) {
+                return $response->getData()['answer'] ?? 'Tidak ada jawaban.';
+            }
         } catch (\Exception $e) {
-            Yii::error('Exception during FastAPI request: ' . $e->getMessage());
-            return 'Error: An exception occurred during the API request.';
+            Yii::error('FastAPI request failed: ' . $e->getMessage());
         }
+        return 'Terjadi kesalahan saat mengambil jawaban.';
     }
 
+    public function actionLog()
+    {
+        $searchModel = new QaLogSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
 
+        return $this->render('log', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
     /**
      * Login action.
      *

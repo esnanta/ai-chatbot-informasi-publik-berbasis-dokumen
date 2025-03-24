@@ -1,7 +1,7 @@
 <?php
 
 /** @var yii\web\View $this */
-/** @var app\models\ChatbotForm $model */
+/** @var app\models\QaLog $model */
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
