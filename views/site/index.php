@@ -34,24 +34,27 @@ $this->title = 'AI Chatbot';
 
 <?php
 $this->registerJs(<<<JS
-$(function() {
-    $('#chatbot-form').on('beforeSubmit', function(e) {
-        e.preventDefault(); // Prevent default form submission
+$(document).ready(function() {
+    $('#chatbot-form').on('submit', function(e) {
+        e.preventDefault(); // Mencegah form dikirim secara normal
         var form = $(this);
+        var formData = form.serialize(); // Mengambil data form
+
         $.ajax({
             url: form.attr('action'),
             type: 'POST',
-            data: form.serialize(), // CORRECT: Use form.serialize()
-            dataType: 'json', // Expect a JSON response
+            data: formData,
+            dataType: 'json',
             success: function(response) {
                 if (response && response.answer) {
                     $('#answer').html('<b>Answer:</b> ' + response.answer);
+                    $('#chatbot-form')[0].reset(); // Mengosongkan input setelah sukses
                 } else {
                     $('#answer').html('<b>Error:</b> No answer received or invalid response.');
                 }
             },
             error: function(xhr, status, error) {
-                $('#answer').html('<b>Error:</b> An error occurred: ' + error); // Display error
+                $('#answer').html('<b>Error:</b> ' + error);
             }
         });
     });
