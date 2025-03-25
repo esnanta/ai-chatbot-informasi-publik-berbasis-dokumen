@@ -214,7 +214,37 @@ try:
 except Exception as e:
     print(f"Error saving cleaned texts: {e}")
 
-"""# TESTING"""
+"""# TESTING
+Chatbot menampilkan mengambil dan menampilkan 3 chunk teks yang paling mirip dengan pertanyaan pengguna sebagai jawaban.
+
+## Keterangan
+1. question_embedding = model.encode([question])[0]: Pertanyaan pengguna diubah menjadi vektor embedding numerik menggunakan model Sentence Transformer.
+
+2. similarities = cosine_similarity([question_embedding], embeddings)[0]: Fungsi cosine_similarity menghitung kemiripan kosinus antara embedding pertanyaan dan semua embedding chunk teks yang telah dihitung sebelumnya. Hasilnya adalah array similarities yang berisi skor kemiripan untuk setiap chunk.
+
+3. top_indices = np.argsort(similarities)[::-1][:top_n]: Ini adalah kunci mengapa chatbot menampilkan 3 jawaban (atau lebih tepatnya, 3 chunk). Mari kita uraikan:
+  * np.argsort(similarities): Ini mengurutkan array similarities secara ascending (dari terkecil ke terbesar) dan mengembalikan indeks dari elemen-elemen yang diurutkan, bukan nilai kemiripannya itu sendiri. Contoh: Jika similarities adalah [0.2, 0.8, 0.5], maka np.argsort(similarities) akan mengembalikan [0, 2, 1] (indeks 0 memiliki nilai terkecil, indeks 2 berikutnya, dan indeks 1 memiliki nilai terbesar).
+  * [::-1]: Ini membalikkan urutan array indeks. Jadi, sekarang kita memiliki indeks yang diurutkan dari skor kemiripan tertinggi ke terendah.
+  * [:top_n]: Ini mengambil top_n elemen pertama dari array indeks yang sudah dibalik. top_n adalah parameter yang diberikan ke fungsi answer_question dan yang menentukan berapa banyak chunk yang akan diambil.
+
+## Alasan memilih 3 chunk teratas dengan asumsi bahwa:
+1. Konteks yang Lebih Luas: Satu chunk tunggal mungkin tidak selalu berisi jawaban yang lengkap. Dengan mengambil beberapa chunk, ada peluang lebih besar untuk mendapatkan konteks yang lebih luas dan jawaban yang lebih informatif.
+
+2. Variasi Jawaban: Dokumen mungkin mengandung informasi yang relevan di beberapa tempat yang berbeda. Menampilkan beberapa chunk memungkinkan pengguna melihat perspektif yang berbeda.
+
+3. Mengurangi Dampak Chunking yang Kurang Sempurna: Jika proses chunking memecah teks di tempat yang kurang ideal, mengambil beberapa chunk dapat membantu mengkompensasi hal ini.
+
+## Cara Mengubah Jumlah Jawaban
+
+1. Ubah nilai top_n: Cara termudah adalah dengan mengubah nilai top_n saat memanggil fungsi answer_question. Misalnya, untuk menampilkan hanya 1 chunk:
+
+raw_answer = answer_question(question, embeddings, all_chunks, model, top_n=1, similarity_threshold=0.6)
+
+2. Ubah nilai top_n (default 1)
+def answer_question(question, embeddings, chunks, model, top_n=1, similarity_threshold=0.6, keywords=None): #top_n default to 1
+
+Penting: Menampilkan terlalu banyak chunk bisa membuat jawaban menjadi terlalu panjang dan sulit dibaca. Menampilkan terlalu sedikit chunk bisa membuat jawaban menjadi tidak lengkap. Anda perlu menemukan keseimbangan yang tepat. Kombinasi top_n, similarity_threshold, dan keyword filtering adalah kunci untuk mendapatkan hasil yang optimal. top_n hanyalah salah satu bagian dari teka-teki ini. Similarity threshold dan keyword filtering sama pentingnya (atau bahkan lebih penting) daripada top_n.
+"""
 
 # ===============================
 # 7. TESTING CHATBOT

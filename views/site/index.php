@@ -56,8 +56,9 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
         <b>Informasi Tambahan:</b>
     </p>
     <ul>
-        <li><b>Tentang Program:</b> Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</li>
-        <li><b>Log Pertanyaan:</b> Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</li>
+        <li><b>Jawaban :</b> Ada tiga jawaban yang ditampilkan berdasarkan <i>similarities</i> antara pertanyaan dengan dokumen.</li>
+        <li><b>About:</b> Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</li>
+        <li><b>Log:</b> Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</li>
     </ul>
 
 </div>
