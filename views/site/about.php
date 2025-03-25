@@ -36,14 +36,20 @@ $this->params['breadcrumbs'][] = $this->title;
                 Pertanyaan yang terlalu umum atau menggunakan istilah di luar dokumen regulasi dapat
                 menghasilkan jawaban yang kurang relevan.
             </li>
-            <li><b>Tidak Ada Interpretasi Hukum:</b> Chatbot tidak dirancang untuk memberikan interpretasi hukum atau nasihat profesional.</li>
-            <li><b>Potensi Jawaban Berulang:</b> Dalam beberapa kasus, chatbot dapat memberikan jawaban yang serupa untuk pertanyaan yang berbeda namun memiliki kemiripan frasa.</li>
+            <li><b>Tidak Ada Interpretasi Hukum:</b> Chatbot tidak dirancang untuk memberikan
+                interpretasi hukum atau nasihat profesional.
+            </li>
+            <li><b>Potensi Jawaban Berulang:</b> Dalam beberapa kasus, chatbot dapat memberikan jawaban
+                yang serupa untuk pertanyaan yang berbeda namun memiliki kemiripan frasa.
+            </li>
         </ul>
     </div>
 
     <h3>Umpan Balik</h3>
     <p>
-        Untuk meningkatkan kualitas layanan, silakan berikan umpan balik Anda melalui tombol <i>upvote</i> (👍) atau <i>downvote</i> (👎) setelah menerima jawaban. Masukan Anda akan sangat membantu dalam pengembangan program ini lebih lanjut.
+        Untuk meningkatkan kualitas layanan, silakan berikan umpan balik Anda melalui tombol
+        <i>upvote</i> (👍) atau <i>downvote</i> (👎) setelah menerima jawaban.
+        Masukan Anda akan sangat membantu dalam pengembangan program ini lebih lanjut.
     </p>
 
 </div>
