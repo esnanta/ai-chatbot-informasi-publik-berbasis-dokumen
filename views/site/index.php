@@ -27,7 +27,7 @@ $this->title = 'AI Chatbot';
             'placeholder' => 'Ketik pertanyaan...',
             'autocomplete' => 'off'
         ]) ?>
-        <div id="suggestions"></div> <!-- ✅ DITAMBAHKAN: Tempat menampilkan rekomendasi -->
+        <div id="suggestions"></div>
     </div>
 
     <div class="form-group">
@@ -36,10 +36,8 @@ $this->title = 'AI Chatbot';
 
     <?php ActiveForm::end(); ?>
 
-    <!-- Tempat menampilkan jawaban -->
     <div id="answer" style="margin-top: 20px;"></div>
 
-    <!-- Input hidden untuk menyimpan ID jawaban -->
     <input type="hidden" id="answer-id">
 
     <!-- Tombol Upvote & Downvote (Disembunyikan awalnya) -->
