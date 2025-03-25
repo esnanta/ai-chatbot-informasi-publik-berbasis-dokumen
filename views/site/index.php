@@ -7,10 +7,14 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-$this->title = 'AI Chatbot Layanan Informasi Publik';
+$this->title = 'AI Chatbot Layanan Informasi Dana BOS';
 ?>
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
+
+    <p>
+        Berdasarkan <b>Permendikbudristek No. 63 Tahun 2023</b>.
+    </p>
 
     <?php $form = ActiveForm::begin([
         'id' => 'chatbot-form',
@@ -45,6 +49,17 @@ $this->title = 'AI Chatbot Layanan Informasi Publik';
         <button id="upvote-btn" class="btn btn-success">👍 Upvote</button>
         <button id="downvote-btn" class="btn btn-danger">👎 Downvote</button>
     </div>
+
+    <hr>
+
+    <p>
+        <b>Informasi Tambahan:</b>
+    </p>
+    <ul>
+        <li><b>Tentang Program:</b> Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</li>
+        <li><b>Log Pertanyaan:</b> Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</li>
+    </ul>
+
 </div>
 
 <?php

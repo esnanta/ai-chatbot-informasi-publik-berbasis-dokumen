@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h2>Tentang Chatbot AI</h2>
 
     <p>
-        Chatbot AI Layanan Informasi Publik ini dikembangkan sebagai purwarupa awal untuk menyediakan
+        Chatbot AI Layanan Informasi Dana BOS dikembangkan sebagai purwarupa awal untuk menyediakan
         informasi terkait <b>Peraturan Menteri Pendidikan, Kebudayaan, Riset,
             dan Teknologi (Permendikbudristek) Nomor 63 Tahun 2023</b>.
         Program ini dirancang untuk menjawab pertanyaan yang berhubungan dengan  pengelolaan
