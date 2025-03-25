@@ -75,28 +75,47 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->validate()) {
 
-            // Cek apakah pertanyaan sudah ada di database
-            $existingQaLog = QaLog::find()->where(['question' => $model->question])->one();
+// UNTUK SEMENTARA PROSES SEMUA JAWABAN TANPA MEMPERHATIKAN
+// APAKAH SUDAH PERNAH DITANYAKAN SEBELUMNYA
+//
+//            // Cek apakah pertanyaan sudah ada di database
+//            $existingQaLog = QaLog::find()->where(['question' => $model->question])->one();
+//
+//            if ($existingQaLog) {
+//                $answer = $existingQaLog->answer;
+//                $qaLog = $existingQaLog; // Simpan objek agar ID bisa dikembalikan
+//            } else {
+//                // Jika belum ada, panggil API untuk mendapatkan jawaban
+//                $answer = $this->askFastAPI($model->question);
+//
+//                if ($answer) {
+//                    $qaLog = new QaLog();
+//                    $qaLog->question = $model->question;
+//                    $qaLog->answer = $answer;
+//
+//                    if ($qaLog->save()) {
+//                        Yii::debug("Jawaban baru disimpan dengan ID: " . $qaLog->id, __METHOD__);
+//                    } else {
+//                        Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
+//                    }
+//                }
+//            }
 
-            if ($existingQaLog) {
-                $answer = $existingQaLog->answer;
-                $qaLog = $existingQaLog; // Simpan objek agar ID bisa dikembalikan
-            } else {
-                // Jika belum ada, panggil API untuk mendapatkan jawaban
-                $answer = $this->askFastAPI($model->question);
+            // Jika belum ada, panggil API untuk mendapatkan jawaban
+            $answer = $this->askFastAPI($model->question);
 
-                if ($answer) {
-                    $qaLog = new QaLog();
-                    $qaLog->question = $model->question;
-                    $qaLog->answer = $answer;
+            if ($answer) {
+                $qaLog = new QaLog();
+                $qaLog->question = $model->question;
+                $qaLog->answer = $answer;
 
-                    if ($qaLog->save()) {
-                        Yii::debug("Jawaban baru disimpan dengan ID: " . $qaLog->id, __METHOD__);
-                    } else {
-                        Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
-                    }
+                if ($qaLog->save()) {
+                    Yii::debug("Jawaban baru disimpan dengan ID: " . $qaLog->id, __METHOD__);
+                } else {
+                    Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
                 }
             }
+
 
             // Format respons JSON agar ID bisa digunakan untuk upvote/downvote
             Yii::$app->response->format = Response::FORMAT_JSON;

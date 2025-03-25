@@ -7,7 +7,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-$this->title = 'AI Chatbot';
+$this->title = 'AI Chatbot Layanan Informasi Publik';
 ?>
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
@@ -29,9 +29,9 @@ $this->title = 'AI Chatbot';
         ]) ?>
         <div id="suggestions"></div>
     </div>
-
+    <br>
     <div class="form-group">
-        <?= Html::submitButton('Ask', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton('Send', ['class' => 'btn btn-primary']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

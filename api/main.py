@@ -101,7 +101,7 @@ async def ask_chatbot(request: QuestionRequest):
         raw_answer = answer_question(question, embeddings, all_chunks, model)
         processed_answer = post_process_answer(raw_answer)
 
-        return {"answer": "<br>".processed_answer}
+        return {"answer": processed_answer}
 
     except HTTPException as e:
         raise e
