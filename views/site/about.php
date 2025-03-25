@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="alert alert-warning" role="alert">
         <strong>Penting:</strong>
         <p>
-            Program dikembangkan dengan memanfaatkan <em>sentence transformer</em>.
+            Program dikembangkan dengan pemodelan <em>sentence transformer</em>.
             Frasa dan kata kunci yang digunakan dalam pertanyaan akan sangat memengaruhi
             akurasi dan relevansi jawaban yang diberikan. <b>Hal ini karena model
                 mencari kesamaan makna antara pertanyaan dan teks dalam regulasi.</b>
