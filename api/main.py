@@ -122,8 +122,7 @@ def read_root():
     return {"message": "API is running!"}
 
 if __name__ == "__main__":
-    # Ambil port dari environment atau default ke 8000
+    # Ambil port dari environment atau gunakan default 8000
     port = int(os.getenv("PORT", 8000))
     print(f"Starting server on port {port}")  # Debugging
     uvicorn.run(app, host="0.0.0.0", port=port)
-    print("PORT from environment:", os.getenv("PORT"))
