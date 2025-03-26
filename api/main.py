@@ -92,9 +92,9 @@ def load_model():
         model = None
 
 
-# --- Muat Data dan Model ---
+# --- Muat Data ---
 try:
-    load_data()
+    load_data()  # Hanya memuat data, model di-load secara lazy
 except Exception as e:
     print(f"Fatal error during startup: {e}")
     exit(1)  # Stop the application if data loading fails
@@ -105,8 +105,11 @@ def answer_question(question: str, top_n: int = 3) -> str:
     if model is None:
         load_model()  # Load model hanya jika belum di-load
 
-    if embeddings is None or all_chunks is None or model is None:
-        return "Error: Chatbot data or model not loaded properly."
+        if model is None: # Pastikan model berhasil dimuat
+             return "Error: Failed to load the SentenceTransformer model."
+
+    if embeddings is None or all_chunks is None:
+        return "Error: Chatbot data not loaded properly."
 
     try:
         question_embedding = model.encode([question])[0]
