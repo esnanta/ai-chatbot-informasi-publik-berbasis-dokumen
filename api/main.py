@@ -11,8 +11,16 @@ from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from nltk.tokenize import sent_tokenize
 
-nltk.download('punkt')
-nltk.download('punkt_tab')
+# nltk.download('punkt')
+# nltk.download('punkt_tab')
+
+nltk_data_path = "/opt/render/nltk_data/tokenizers"
+
+if not os.path.exists(f"{nltk_data_path}/punkt"):
+    nltk.download('punkt')
+
+if not os.path.exists(f"{nltk_data_path}/punkt_tab"):
+    nltk.download('punkt_tab')
 
 app = FastAPI()
 
