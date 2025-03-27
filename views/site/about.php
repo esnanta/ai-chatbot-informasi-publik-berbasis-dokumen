@@ -12,10 +12,10 @@ $this->params['breadcrumbs'][] = $this->title;
     <h2>Tentang Chatbot AI</h2>
 
     <p>
-        Chatbot AI Layanan Informasi Dana BOS dikembangkan sebagai purwarupa awal untuk menyediakan
+        Chatbot AI Layanan Informasi Dana BOS dikembangkan untuk menyediakan
         informasi terkait <b>Peraturan Menteri Pendidikan, Kebudayaan, Riset,
             dan Teknologi (Permendikbudristek) Nomor 63 Tahun 2023</b>.
-        Program ini dirancang untuk menjawab pertanyaan yang berhubungan dengan  pengelolaan
+        Program ini dirancang untuk menjawab pertanyaan tentang pengelolaan
         Dana Bantuan Operasional Satuan Pendidikan (BOSP), termasuk Dana BOP PAUD, Dana BOS,
         dan Dana BOP Kesetaraan.
     </p>
@@ -23,24 +23,26 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="alert alert-warning" role="alert">
         <strong>Penting:</strong>
         <p>
-            Program dikembangkan dengan pemodelan <em>sentence transformer</em>.
-            Frasa dan kata kunci yang digunakan dalam pertanyaan akan sangat memengaruhi
-            akurasi dan relevansi jawaban yang diberikan. <b>Hal ini karena model
-                mencari kesamaan makna antara pertanyaan dan teks dalam regulasi.</b>
+            Program ini menggunakan kombinasi model <em>sentence transformer</em> dan
+            <em>cross-encoder</em> untuk memberikan jawaban yang relevan.
+            Model <code>all-MiniLM-L6-v2</code> digunakan untuk memahami arti pertanyaan
+            dan mencari informasi yang relevan dari dokumen Permendikbudristek No. 63 Tahun 2023.
+            Kemudian, model <code>cross-encoder/ms-marco-MiniLM-L-6-v2</code> digunakan untuk
+            memastikan bahwa informasi yang dipilih benar-benar menjawab pertanyaan dengan baik.
         </p>
         <ul>
             <li><b>Cakupan Terbatas:</b> Chatbot saat ini hanya dapat menjawab pertanyaan yang
-                secara langsung berkaitan dengan isi Permendikbudristek No. 63 Tahun 2023.
+                berkaitan dengan isi Permendikbudristek No. 63 Tahun 2023.
             </li>
-            <li><b>Sensitivitas Frasa:</b> Kualitas jawaban sangat bergantung pada frasa pertanyaan.
-                Pertanyaan yang terlalu umum atau menggunakan istilah di luar dokumen regulasi dapat
-                menghasilkan jawaban yang kurang relevan.
+            <li><b>Sensitivitas Frasa:</b> Kualitas jawaban bergantung pada seberapa mirip pertanyaan
+                dengan informasi yang tersedia. Pertanyaan yang terlalu umum atau menggunakan istilah
+                yang berbeda mungkin menghasilkan jawaban yang kurang relevan.
             </li>
             <li><b>Tidak Ada Interpretasi Hukum:</b> Chatbot tidak dirancang untuk memberikan
                 interpretasi hukum atau nasihat profesional.
             </li>
-            <li><b>Potensi Jawaban Berulang:</b> Dalam beberapa kasus, chatbot dapat memberikan jawaban
-                yang serupa untuk pertanyaan yang berbeda namun memiliki kemiripan frasa.
+            <li><b>Potensi Jawaban Serupa:</b> Dalam beberapa kasus, chatbot dapat memberikan jawaban
+                yang serupa untuk pertanyaan yang memiliki kemiripan makna, meskipun kata-katanya berbeda.
             </li>
         </ul>
     </div>
@@ -53,4 +55,3 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
 </div>
-

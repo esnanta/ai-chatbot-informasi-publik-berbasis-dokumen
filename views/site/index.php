@@ -13,7 +13,7 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        Berdasarkan <b>Permendikbudristek No. 63 Tahun 2023</b>.
+        Sumber data: <b>Permendikbudristek No. 63 Tahun 2023</b>.
     </p>
 
     <?php $form = ActiveForm::begin([
@@ -60,7 +60,9 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
         <b>Informasi Tambahan:</b>
     </p>
     <ul>
-        <li><b>Jawaban :</b> Ada tiga jawaban yang ditampilkan berdasarkan <i>similarities</i> antara pertanyaan dengan dokumen.</li>
+        <li><b>Jawaban :</b> Model yang digunakan berusaha memahami arti pertanyaan dan informasi
+            yang tersedia berdasarkan kemiripan. Potongan informasi kemudian dipilih dan
+            ditampilkan sebanyak 3 jawaban yang paling mendekati.</li>
         <li><b>About:</b> Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</li>
         <li><b>Log:</b> Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</li>
     </ul>

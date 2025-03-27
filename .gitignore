@@ -33,5 +33,5 @@ tests/_support/_generated
 /.vagrant
 
 # API folder
-/api/myenv
+/api/myvenv
 /api/.idea
