@@ -39,7 +39,7 @@ app.add_middleware(
 )
 
 # --- Variabel Global untuk Model dan Data ---
-BASE_DIR = "knowledge_base"
+BASE_DIR = "api/knowledge_base"
 EMBEDDINGS_FILE = os.path.join(BASE_DIR, "embeddings.npy")
 CHUNKS_FILE = os.path.join(BASE_DIR, "chunks.json")
 
