@@ -1,35 +1,27 @@
 import os
 import json
-import nltk
-import uvicorn
+import faiss
 import numpy as np
-import torch  # Import torch
+import uvicorn
+import nltk
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from nltk import sent_tokenize
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer, CrossEncoder
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-from nltk.tokenize import sent_tokenize
-import time  # Untuk mengukur waktu loading
+import time
+import logging
 
-# --- Pastikan nltk tokenizer tersedia ---
-try:
-    nltk.data.find("tokenizers/punkt")
-except LookupError:
-    nltk.download("punkt")
+# Konfigurasi Logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-try:
-    nltk.data.find("tokenizers/punkt_tab")
-except LookupError:
-    nltk.download("punkt_tab")
-
-# --- Inisialisasi FastAPI ---
 app = FastAPI()
 
-# --- Konfigurasi CORS ---
+# Konfigurasi CORS
 origins = ["http://localhost", "http://localhost:80", "*"]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -38,131 +30,136 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 
-# --- Variabel Global untuk Model dan Data ---
-BASE_DIR = "api/knowledge_base"
-EMBEDDINGS_FILE = os.path.join(BASE_DIR, "embeddings.npy")
+# Konstanta dan Inisialisasi Global
+BASE_DIR = "knowledge_base"
 CHUNKS_FILE = os.path.join(BASE_DIR, "chunks.json")
+EMBEDDING_DIMENSION = 384  # Dimensi embedding model MiniLM
 
-embeddings = None
-all_chunks = None
-model = None  # Model diinisialisasi sebagai None untuk lazy loading
+# Inisialisasi Model (Eager Loading)
+logging.info("Loading models and data...")
+start_time = time.time()
 
-
-# --- Fungsi Memuat Data ---
-def load_data():
-    global embeddings, all_chunks
-
-    try:
-        start_time = time.time()
-        embeddings = np.load(EMBEDDINGS_FILE)
-        end_time = time.time()
-        print(f"Embeddings loaded successfully in {end_time - start_time:.2f} seconds.")
-    except FileNotFoundError:
-        print(f"Error: Embeddings file not found at {EMBEDDINGS_FILE}")
-        raise  # Re-raise exception to stop the application
-    except Exception as e:
-        print(f"Error loading embeddings: {e}")
-        embeddings = None
-
-    try:
-        start_time = time.time()
-        with open(CHUNKS_FILE, "r", encoding="utf-8") as f:
-            all_chunks = json.load(f)
-        end_time = time.time()
-        print(f"Chunks loaded successfully in {end_time - start_time:.2f} seconds.")
-    except FileNotFoundError:
-        print(f"Error: Chunks file not found at {CHUNKS_FILE}")
-        raise  # Re-raise exception to stop the application
-    except Exception as e:
-        print(f"Error loading chunks: {e}")
-        all_chunks = None
-
-
-# --- Fungsi Memuat Model ---
-def load_model():
-    global model
-    model_name = 'paraphrase-multilingual-mpnet-base-v2'
-    try:
-        start_time = time.time()
-        model = SentenceTransformer(model_name, device='cuda' if torch.cuda.is_available() else 'cpu')  # Gunakan GPU jika tersedia
-        end_time = time.time()
-        print(f"SentenceTransformer model loaded successfully in {end_time - start_time:.2f} seconds.")
-    except Exception as e:
-        print(f"Error loading model: {e}")
-        model = None
-
-
-# --- Muat Data ---
 try:
-    load_data()  # Hanya memuat data, model di-load secara lazy
-except Exception as e:
-    print(f"Fatal error during startup: {e}")
-    exit(1)  # Stop the application if data loading fails
-
-# --- Fungsi untuk Menjawab Pertanyaan ---
-def answer_question(question: str, top_n: int = 3) -> str:
-    global model
-    if model is None:
-        load_model()  # Load model hanya jika belum di-load
-
-        if model is None: # Pastikan model berhasil dimuat
-             return "Error: Failed to load the SentenceTransformer model."
-
-    if embeddings is None or all_chunks is None:
-        return "Error: Chatbot data not loaded properly."
-
+    # Muat stopwords Bahasa Indonesia
     try:
-        question_embedding = model.encode([question])[0]
-        similarities = cosine_similarity([question_embedding], embeddings)[0]
-        top_indices = np.argsort(similarities)[::-1][:top_n]
+        stopwords_id = list(stopwords.words("indonesian"))
+    except LookupError:
+        logging.info("Downloading 'stopwords' from nltk...")
+        nltk.download("stopwords")
+        stopwords_id = list(stopwords.words("indonesian"))
+    vectorizer_temp = TfidfVectorizer()
+    tokenizer = vectorizer_temp.build_tokenizer()
+    STOPWORDS_ID = [" ".join(tokenizer(word)) for word in stopwords_id]
 
-        context = "\n".join([all_chunks[i] for i in top_indices])
-        return context
-    except Exception as e:
-        print(f"Error in answer_question: {e}")
-        return "Error: An error occurred while processing the question." # Return error message
+    # Muat chunks dari file
+    with open(CHUNKS_FILE, "r", encoding="utf-8") as f:
+        ALL_CHUNKS = json.load(f)
 
-# --- Fungsi Post-processing Jawaban ---
-def post_process_answer(answer: str) -> str:
+    # Inisialisasi dan latih index FAISS
+    INDEX = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
+    EMBEDDER = SentenceTransformer("all-MiniLM-L6-v2")
+    CHUNK_EMBEDDINGS = EMBEDDER.encode(ALL_CHUNKS, convert_to_numpy=True)
+    INDEX.add(CHUNK_EMBEDDINGS)
+
+    CROSS_ENCODER_MODEL = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+    end_time = time.time()
+    logging.info(f"Models and data loaded in {end_time - start_time:.2f} seconds.")
+
+except FileNotFoundError:
+    logging.error(f"Chunks file not found at {CHUNKS_FILE}")
+    ALL_CHUNKS = None
+    INDEX = None
+    EMBEDDER = None
+    CROSS_ENCODER_MODEL = None
+    raise  # Re-raise exception agar aplikasi berhenti saat startup
+except Exception as e:
+    logging.exception("Error during eager loading:")  # Log detail error
+    ALL_CHUNKS = None
+    INDEX = None
+    EMBEDDER = None
+    CROSS_ENCODER_MODEL = None
+    raise  # Re-raise exception agar aplikasi berhenti saat startup
+
+# Fungsi Utilitas
+def extract_keywords(question, top_n=5):
+    """Ekstraksi kata kunci menggunakan TF-IDF."""
+    vectorizer = TfidfVectorizer(stop_words=STOPWORDS_ID)
+    tfidf_matrix = vectorizer.fit_transform([question])
+    feature_array = np.array(vectorizer.get_feature_names_out())
+    tfidf_sorting = np.argsort(tfidf_matrix.toarray()).flatten()[::-1]
+    top_keywords = feature_array[tfidf_sorting][:top_n]
+    return set(top_keywords)
+
+def filter_chunks_by_keywords(question, chunks):
+    """Filter chunks berdasarkan kata kunci."""
+    keywords = extract_keywords(question)
+    filtered_chunks = [chunk for chunk in chunks if any(keyword.lower() in chunk.lower() for keyword in keywords)]
+    return filtered_chunks if filtered_chunks else chunks
+
+def post_process_answer(answer):
+    """Memproses jawaban untuk menghasilkan daftar bullet."""
     sentences = sent_tokenize(answer)
-    bulleted_list = "<br>".join([f"* {sentence.strip()}" for sentence in sentences])
+    unique_sentences = list(dict.fromkeys(sentences))  # Menghilangkan duplikat
+    bulleted_list = "\n".join([f"* {sentence.strip()}" for sentence in unique_sentences if len(sentence.strip()) > 10])
     return bulleted_list
 
+# Fungsi Utama: Menjawab Pertanyaan
+def answer_question(question, top_n=3):
+    """Menjawab pertanyaan berdasarkan knowledge base."""
+    try:
+        if not ALL_CHUNKS or not INDEX or not EMBEDDER or not CROSS_ENCODER_MODEL:
+            raise RuntimeError("Models or data not loaded properly.")
 
-# --- Model Request ---
+        filtered_chunks = filter_chunks_by_keywords(question, ALL_CHUNKS)
+        filtered_embeddings = EMBEDDER.encode(filtered_chunks, convert_to_numpy=True)
+
+        index_filtered = faiss.IndexFlatL2(EMBEDDING_DIMENSION)
+        index_filtered.add(filtered_embeddings)
+
+        question_embedding = EMBEDDER.encode([question], convert_to_numpy=True)
+        D, I = index_filtered.search(question_embedding, min(top_n * 2, len(filtered_chunks)))
+
+        candidates = [filtered_chunks[i] for i in I[0]]
+
+        pairs = [(question, chunk) for chunk in candidates]
+        scores = CROSS_ENCODER_MODEL.predict(pairs)
+        top_indices = np.argsort(scores)[::-1][:top_n]
+
+        context = "\n".join([candidates[i] for i in top_indices])
+        return context
+    except Exception as e:
+        logging.exception(f"Error in answer_question: {e}")
+        return "Error: Terjadi kesalahan dalam memproses pertanyaan."
+
+# Model Request (Pydantic)
 class QuestionRequest(BaseModel):
     question: str
 
-
-# --- API Endpoint ---
+# API Endpoints
 @app.post("/ask")
 async def ask_chatbot(request: QuestionRequest):
     try:
-        print(f"Received request: {request}")
-        question = request.question
-        if not question:
+        logging.info(f"Received question: {request.question}")
+        if not request.question:
             raise HTTPException(status_code=400, detail="No question provided")
 
-        raw_answer = answer_question(question)
+        raw_answer = answer_question(request.question)
         processed_answer = post_process_answer(raw_answer)
-
         return {"answer": processed_answer}
 
     except HTTPException as e:
         raise e
     except Exception as e:
-        print(f"API error: {e}")
+        logging.exception("Error processing request:")
         raise HTTPException(status_code=500, detail="An error occurred processing the request")
 
-
-# --- Endpoint Root ---
 @app.get("/")
 def read_root():
     return {"message": "API is running!"}
 
-
-# --- Menjalankan Uvicorn ---
+# Main Execution
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
-    print(f"Starting server on port {port}")
+    logging.info(f"Starting server on port {port}")
     uvicorn.run(app, host="0.0.0.0", port=port)

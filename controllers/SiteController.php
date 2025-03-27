@@ -75,33 +75,6 @@ class SiteController extends Controller
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->validate()) {
 
-// UNTUK SEMENTARA PROSES SEMUA JAWABAN TANPA MEMPERHATIKAN
-// APAKAH SUDAH PERNAH DITANYAKAN SEBELUMNYA
-//
-//            // Cek apakah pertanyaan sudah ada di database
-//            $existingQaLog = QaLog::find()->where(['question' => $model->question])->one();
-//
-//            if ($existingQaLog) {
-//                $answer = $existingQaLog->answer;
-//                $qaLog = $existingQaLog; // Simpan objek agar ID bisa dikembalikan
-//            } else {
-//                // Jika belum ada, panggil API untuk mendapatkan jawaban
-//                $answer = $this->askFastAPI($model->question);
-//
-//                if ($answer) {
-//                    $qaLog = new QaLog();
-//                    $qaLog->question = $model->question;
-//                    $qaLog->answer = $answer;
-//
-//                    if ($qaLog->save()) {
-//                        Yii::debug("Jawaban baru disimpan dengan ID: " . $qaLog->id, __METHOD__);
-//                    } else {
-//                        Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
-//                    }
-//                }
-//            }
-
-            // Jika belum ada, panggil API untuk mendapatkan jawaban
             $answer = $this->askFastAPI($model->question);
 
             if ($answer) {
@@ -115,7 +88,6 @@ class SiteController extends Controller
                     Yii::debug("Gagal menyimpan jawaban baru.", __METHOD__);
                 }
             }
-
 
             // Format respons JSON agar ID bisa digunakan untuk upvote/downvote
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -135,10 +107,10 @@ class SiteController extends Controller
     private function askFastAPI(string $question): string
     {
         // Untuk localhost
-        // $api_url = 'http://127.0.0.1:8000/ask';
+         $api_url = 'http://127.0.0.1:8000/ask';
 
         // Gunakan URL dari Render
-        $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
+        // $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
 
         $client = new Client();
 

@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\Expression;
 use app\models\Suggestion;
 
 /**
@@ -41,7 +42,7 @@ class SuggestionSearch extends Suggestion
      */
     public function search($params, $formName = null)
     {
-        $query = Suggestion::find();
+        $query = Suggestion::find()->orderBy(new Expression('rand()'));
 
         // add conditions that should always apply here
 

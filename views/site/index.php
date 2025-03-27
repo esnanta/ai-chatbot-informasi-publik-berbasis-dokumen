@@ -36,6 +36,10 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
     <br>
     <div class="form-group">
         <?= Html::submitButton('Send', ['class' => 'btn btn-primary']) ?>
+        <!-- ✅ DITAMBAHKAN: Loading Indicator -->
+        <div id="loading-indicator" style="display: none;">
+            <div class="spinner"></div> Loading...
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -104,12 +108,19 @@ $(document).ready(function() {
         var form = $(this);
         var formData = form.serialize();
 
+        // ✅ DITAMBAHKAN: Tampilkan loading indicator
+        $('#loading-indicator').show();
+        $('#answer').html(''); // Kosongkan jawaban sebelumnya
+
         $.ajax({
             url: form.attr('action'),
             type: 'POST',
             data: formData,
             dataType: 'json',
             success: function(response) {
+                // Sembunyikan loading indicator
+                $('#loading-indicator').hide();
+
                 if (response && response.answer) {
                     // Tampilkan jawaban
                     $('#answer').html('<b>Answer:</b> ' + response.answer);
@@ -124,6 +135,8 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
+                // Sembunyikan loading indicator pada error
+                $('#loading-indicator').hide();
                 $('#answer').html('<b>Error:</b> ' + error);
             }
         });
@@ -190,5 +203,33 @@ JS
     }
     .suggestion-item:hover {
         background: #f2f2f2;
+    }
+
+    /* ✅ DITAMBAHKAN: Styling untuk loading indicator */
+    #loading-indicator {
+        display: inline-block; /* Agar sejajar dengan tombol */
+        margin-left: 10px;
+        color: #555;
+    }
+
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: #4CAF50; /* Warna hijau */
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 5px;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
     }
 </style>

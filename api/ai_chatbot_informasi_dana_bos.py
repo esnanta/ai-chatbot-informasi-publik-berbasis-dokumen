@@ -30,7 +30,7 @@ Original file is located at
 # Import Library
 """
 
-!pip install pymupdf nltk sastrawi transformers sentence-transformers faiss-cpu
+!pip install pymupdf nltk transformers sentence-transformers faiss-cpu
 
 import os
 import re
@@ -39,12 +39,12 @@ import fitz
 import nltk
 import faiss
 import numpy as np
-from nltk.tokenize import sent_tokenize
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import CrossEncoder
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+
+from nltk import sent_tokenize
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sentence_transformers import SentenceTransformer, CrossEncoder
 from google.colab import drive
-from sklearn.metrics.pairwise import cosine_similarity
 
 # Download resource NLTK
 nltk.download('punkt')
@@ -229,9 +229,8 @@ except Exception as e:
 cross_encoder_model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
-
 # ===============================
-# 5. FAISS INDEXING
+# 7. FAISS INDEXING
 # ===============================
 
 d = 384  # Dimensi embedding dari model MiniLM
@@ -240,14 +239,54 @@ chunk_embeddings = embedder.encode(all_chunks, convert_to_numpy=True)
 index.add(chunk_embeddings)
 
 # --- Question Answering ---
-def answer_question(question, chunks, top_n=3):
-    question_embedding = embedder.encode([question], convert_to_numpy=True)
-    D, I = index.search(question_embedding, top_n * 2)
 
-    candidates = [chunks[i] for i in I[0]]
+stopwords_id = list(stopwords.words("indonesian"))
+
+# Normalisasi stopwords agar cocok dengan tokenizer Scikit-learn
+vectorizer_temp = TfidfVectorizer()
+tokenizer = vectorizer_temp.build_tokenizer()
+stopwords_id = [" ".join(tokenizer(word)) for word in stopwords_id]  # Pastikan konsistensi
+
+def extract_keywords(question, top_n=5):
+    """Mengekstrak kata kunci dari pertanyaan menggunakan TF-IDF (Bahasa Indonesia)"""
+    vectorizer = TfidfVectorizer(stop_words=stopwords_id)  # Gunakan stopwords ID yang sudah dinormalisasi
+    tfidf_matrix = vectorizer.fit_transform([question])
+
+    feature_array = np.array(vectorizer.get_feature_names_out())
+    tfidf_sorting = np.argsort(tfidf_matrix.toarray()).flatten()[::-1]
+
+    top_keywords = feature_array[tfidf_sorting][:top_n]
+    return set(top_keywords)
+
+def filter_chunks_by_keywords(question, chunks):
+    """Memilih hanya chunk yang mengandung kata kunci dari pertanyaan"""
+    keywords = extract_keywords(question)
+    filtered_chunks = [chunk for chunk in chunks if any(keyword.lower() in chunk.lower() for keyword in keywords)]
+    return filtered_chunks if filtered_chunks else chunks  # Jika kosong, tetap gunakan semua chunk
+
+def answer_question(question, chunks, top_n=3):
+    # Filter chunk berdasarkan kata kunci pertanyaan
+    filtered_chunks = filter_chunks_by_keywords(question, chunks)
+
+    # Lakukan embedding hanya pada chunk yang relevan
+    filtered_embeddings = embedder.encode(filtered_chunks, convert_to_numpy=True)
+
+    # Buat indeks FAISS baru untuk chunk yang sudah difilter
+    index_filtered = faiss.IndexFlatL2(d)
+    index_filtered.add(filtered_embeddings)
+
+    # Cari similarity dengan FAISS
+    question_embedding = embedder.encode([question], convert_to_numpy=True)
+    D, I = index_filtered.search(question_embedding, min(top_n * 2, len(filtered_chunks)))
+
+    # Ambil kandidat chunk berdasarkan FAISS
+    candidates = [filtered_chunks[i] for i in I[0]]
+
+    # Gunakan Cross-Encoder untuk memilih chunk terbaik
     pairs = [(question, chunk) for chunk in candidates]
     scores = cross_encoder_model.predict(pairs)
     top_indices = np.argsort(scores)[::-1][:top_n]
+
     context = "\n".join([candidates[i] for i in top_indices])
     return context
 
