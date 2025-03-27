@@ -23,6 +23,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="h-100">
 <head>
+	<meta name="dicoding:email" content="ombakrinai@gmail.com">
     <title><?= Html::encode($this->title) ?></title>
     <?= Html::csrfMetaTags() ?>
     <?php $this->head() ?>
