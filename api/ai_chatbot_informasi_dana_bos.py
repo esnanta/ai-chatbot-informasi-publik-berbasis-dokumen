@@ -30,16 +30,19 @@ Original file is located at
 # Import Library
 """
 
-!pip install pymupdf nltk sastrawi transformers sentence-transformers
+!pip install pymupdf nltk sastrawi transformers sentence-transformers faiss-cpu
 
 import os
 import re
 import json
 import fitz
 import nltk
+import faiss
 import numpy as np
 from nltk.tokenize import sent_tokenize
 from sentence_transformers import SentenceTransformer
+from sentence_transformers import CrossEncoder
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from google.colab import drive
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -133,69 +136,71 @@ cleaned_texts = {pdf: clean_text(text) for pdf, text in pdf_texts.items()}
 # Splits text into smaller chunks.
 # ===============================
 
-def chunk_text(text, chunk_size=100):
+def chunk_text(text, chunk_size=500):
     sentences = sent_tokenize(text)
     chunks = []
     current_chunk = ""
+
     for sentence in sentences:
         if len(current_chunk) + len(sentence) + 1 <= chunk_size:
             current_chunk += sentence + " "
         else:
-            chunks.append(current_chunk.strip())
+            if len(current_chunk) > 100:  # Pastikan chunk tidak terlalu kecil
+                chunks.append(current_chunk.strip())
             current_chunk = sentence + " "
-    if current_chunk:
+
+    if len(current_chunk) > 100:  # Pastikan chunk tidak terlalu kecil
         chunks.append(current_chunk.strip())
+
     return chunks
+
+def clean_chunk(chunk):
+    # Hapus angka atau simbol yang berada di awal baris
+    chunk = re.sub(r'^\s*[\d\-\•]+', '', chunk)
+    # Hapus angka yang berdiri sendiri tanpa konteks
+    chunk = re.sub(r'\s*\d+\s*$', '', chunk)
+    return chunk.strip()
+
+def filter_irrelevant_text(chunk):
+    irrelevant_patterns = [
+        r'\(\d+\)\s*Dihapus',  # "(3) Dihapus", "(4) Dihapus"
+        r'-\d+-',  # "-9-", "-11-" (kemungkinan nomor halaman)
+        r'Pasal\s*\d+',  # "Pasal 52a" (jika tidak ada konteks)
+        r'^\s*\.\s*$',  # Tanda titik yang berdiri sendiri
+    ]
+
+    for pattern in irrelevant_patterns:
+        chunk = re.sub(pattern, '', chunk)
+
+    # Hapus angka yang berdiri sendiri, kecuali yang ada dalam kurung ( ) atau { }
+    chunk = re.sub(r'\b\d+\b(?![\)}])', ' ', chunk)  # Hanya hapus angka yang tidak diikuti kurung
+
+    # Hilangkan spasi berlebihan
+    chunk = re.sub(r'\s+', ' ', chunk).strip()
+
+    return chunk
 
 all_chunks = []
 for pdf, text in cleaned_texts.items():
-    chunks = chunk_text(text)
-    all_chunks.extend(chunks)
+    chunks = chunk_text(text)  # 1️⃣ Chunking dulu
+    cleaned_chunks = [clean_chunk(chunk) for chunk in chunks]  # 2️⃣ Clean angka awal
+    final_chunks = [filter_irrelevant_text(chunk) for chunk in cleaned_chunks]  # 3️⃣ Hapus bagian tidak relevan
+    all_chunks.extend(final_chunks)
 
 print(f"Total chunks: {len(all_chunks)}")
-
-"""# TOKENISASI TEKS"""
-
-# ===============================
-# 5. TOKENISASI TEKS & EMBEDDING
-# ===============================
-
-# Load Sentence Transformer model (multilingual)
-model_name = 'paraphrase-multilingual-mpnet-base-v2'  # Replace with the actual model
-model = SentenceTransformer(model_name)
-
-# Generate embeddings for the chunks
-embeddings = model.encode(all_chunks, show_progress_bar=True)
 
 """# SAVING DATA"""
 
 # ===============================
-# 6. SAVING DATA
+# 5. SAVING DATA
 # ===============================
 
 # Define file paths for saving data
-embeddings_file = os.path.join(pdf_dir, "embeddings.npy")  # Path to save embeddings
 chunks_file = os.path.join(pdf_dir, "chunks.json")  # Path to save chunks
 cleaned_texts_file = os.path.join(pdf_dir, "cleaned_texts.json") # Path to save cleaned texts
 
-# ------------------------------------------------------------------
-# 1. Saving the SentenceTransformer Model (NOT NECESSARY, SEE COMMENTS)
-# ------------------------------------------------------------------
-# As discussed, saving the SentenceTransformer model itself is not necessary
-# because you can simply load it from the Hugging Face Model Hub using the model_name.
-# Saving the model weights would take up a lot of space and is not required in this case.
-
 # --------------------------------------
-# 2. Saving the Embeddings
-# --------------------------------------
-try:
-    np.save(embeddings_file, embeddings)
-    print(f"Embeddings saved to: {embeddings_file}")
-except Exception as e:
-    print(f"Error saving embeddings: {e}")
-
-# --------------------------------------
-# 3. Saving the Chunks of Text
+# 1. Saving the Chunks of Text
 # --------------------------------------
 try:
     with open(chunks_file, "w", encoding="utf-8") as f:
@@ -205,7 +210,7 @@ except Exception as e:
     print(f"Error saving chunks: {e}")
 
 # --------------------------------------
-# 4. Saving the Cleaned PDF Texts
+# 2. Saving the Cleaned PDF Texts
 # --------------------------------------
 try:
     with open(cleaned_texts_file, "w", encoding="utf-8") as f:
@@ -214,69 +219,60 @@ try:
 except Exception as e:
     print(f"Error saving cleaned texts: {e}")
 
+"""# LOAD MODEL"""
+
+# ===============================
+# 6. MODEL
+# ===============================
+
+# Load Sentence Transformer model
+cross_encoder_model = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+embedder = SentenceTransformer("all-MiniLM-L6-v2")
+
+
+# ===============================
+# 5. FAISS INDEXING
+# ===============================
+
+d = 384  # Dimensi embedding dari model MiniLM
+index = faiss.IndexFlatL2(d)
+chunk_embeddings = embedder.encode(all_chunks, convert_to_numpy=True)
+index.add(chunk_embeddings)
+
+# --- Question Answering ---
+def answer_question(question, chunks, top_n=3):
+    question_embedding = embedder.encode([question], convert_to_numpy=True)
+    D, I = index.search(question_embedding, top_n * 2)
+
+    candidates = [chunks[i] for i in I[0]]
+    pairs = [(question, chunk) for chunk in candidates]
+    scores = cross_encoder_model.predict(pairs)
+    top_indices = np.argsort(scores)[::-1][:top_n]
+    context = "\n".join([candidates[i] for i in top_indices])
+    return context
+
+def post_process_answer(answer):
+    sentences = sent_tokenize(answer)
+
+    # Hapus duplikasi dan urutkan kalimat agar lebih jelas
+    unique_sentences = list(dict.fromkeys(sentences))
+
+    # Format sebagai bullet list dengan memastikan keterbacaan
+    bulleted_list = "\n".join([f"* {sentence.strip()}" for sentence in unique_sentences if len(sentence.strip()) > 10])
+
+    return bulleted_list
+
 """# TESTING
 Chatbot menampilkan mengambil dan menampilkan 3 chunk teks yang paling mirip dengan pertanyaan pengguna sebagai jawaban.
-
-## Keterangan
-1. question_embedding = model.encode([question])[0]: Pertanyaan pengguna diubah menjadi vektor embedding numerik menggunakan model Sentence Transformer.
-
-2. similarities = cosine_similarity([question_embedding], embeddings)[0]: Fungsi cosine_similarity menghitung kemiripan kosinus antara embedding pertanyaan dan semua embedding chunk teks yang telah dihitung sebelumnya. Hasilnya adalah array similarities yang berisi skor kemiripan untuk setiap chunk.
-
-3. top_indices = np.argsort(similarities)[::-1][:top_n]: Ini adalah kunci mengapa chatbot menampilkan 3 jawaban (atau lebih tepatnya, 3 chunk). Mari kita uraikan:
-  * np.argsort(similarities): Ini mengurutkan array similarities secara ascending (dari terkecil ke terbesar) dan mengembalikan indeks dari elemen-elemen yang diurutkan, bukan nilai kemiripannya itu sendiri. Contoh: Jika similarities adalah [0.2, 0.8, 0.5], maka np.argsort(similarities) akan mengembalikan [0, 2, 1] (indeks 0 memiliki nilai terkecil, indeks 2 berikutnya, dan indeks 1 memiliki nilai terbesar).
-  * [::-1]: Ini membalikkan urutan array indeks. Jadi, sekarang kita memiliki indeks yang diurutkan dari skor kemiripan tertinggi ke terendah.
-  * [:top_n]: Ini mengambil top_n elemen pertama dari array indeks yang sudah dibalik. top_n adalah parameter yang diberikan ke fungsi answer_question dan yang menentukan berapa banyak chunk yang akan diambil.
-
-## Alasan memilih 3 chunk teratas dengan asumsi bahwa:
-1. Konteks yang Lebih Luas: Satu chunk tunggal mungkin tidak selalu berisi jawaban yang lengkap. Dengan mengambil beberapa chunk, ada peluang lebih besar untuk mendapatkan konteks yang lebih luas dan jawaban yang lebih informatif.
-
-2. Variasi Jawaban: Dokumen mungkin mengandung informasi yang relevan di beberapa tempat yang berbeda. Menampilkan beberapa chunk memungkinkan pengguna melihat perspektif yang berbeda.
-
-3. Mengurangi Dampak Chunking yang Kurang Sempurna: Jika proses chunking memecah teks di tempat yang kurang ideal, mengambil beberapa chunk dapat membantu mengkompensasi hal ini.
-
-## Cara Mengubah Jumlah Jawaban
-
-1. Ubah nilai top_n: Cara termudah adalah dengan mengubah nilai top_n saat memanggil fungsi answer_question. Misalnya, untuk menampilkan hanya 1 chunk:
-
-raw_answer = answer_question(question, embeddings, all_chunks, model, top_n=1, similarity_threshold=0.6)
-
-2. Ubah nilai top_n (default 1)
-def answer_question(question, embeddings, chunks, model, top_n=1, similarity_threshold=0.6, keywords=None): #top_n default to 1
-
-Penting: Menampilkan terlalu banyak chunk bisa membuat jawaban menjadi terlalu panjang dan sulit dibaca. Menampilkan terlalu sedikit chunk bisa membuat jawaban menjadi tidak lengkap. Anda perlu menemukan keseimbangan yang tepat. Kombinasi top_n, similarity_threshold, dan keyword filtering adalah kunci untuk mendapatkan hasil yang optimal. top_n hanyalah salah satu bagian dari teka-teki ini. Similarity threshold dan keyword filtering sama pentingnya (atau bahkan lebih penting) daripada top_n.
 """
 
 # ===============================
 # 7. TESTING CHATBOT
 # ===============================
 
-# --- Question Answering ---
-def answer_question(question, embeddings, chunks, top_n=3):
-    question_embedding = model.encode([question])[0]
-    similarities = cosine_similarity([question_embedding], embeddings)[0]
-    top_indices = np.argsort(similarities)[::-1][:top_n]
-
-    # Debugging: Print the top chunks
-    print("Top Chunks before post-processing:")
-    for i in top_indices:
-        print(f"Chunk {i}: {chunks[i]}\n---")
-
-    context = "\n".join([chunks[i] for i in top_indices])
-
-    return context
-
-def post_process_answer(answer):
-    # Split the answer into sentences
-    sentences = sent_tokenize(answer)
-
-    # Create a bulleted list from the sentences
-    bulleted_list = "\n".join([f"* {sentence.strip()}" for sentence in sentences])
-
-    return bulleted_list
-
 # --- Example Usage ---
 question = "Apakah Dana BOSP dapat digunakan untuk pengembangan sumber daya manusia?"  # More focused question
-raw_answer = answer_question(question, embeddings, all_chunks, top_n=3)
+raw_answer = answer_question(question, all_chunks, top_n=3)
 processed_answer = post_process_answer(raw_answer)
 
 print(f"Pertanyaan: {question}")
@@ -284,7 +280,7 @@ print(f"Jawaban:\n{processed_answer}")
 
 # --- Example Usage ---
 question = "Untuk apa saja Dana BOS Kinerja dapat digunakan?"  # More focused question
-raw_answer = answer_question(question, embeddings, all_chunks, top_n=3)
+raw_answer = answer_question(question, all_chunks, top_n=3)
 processed_answer = post_process_answer(raw_answer)
 
 print(f"Pertanyaan: {question}")
@@ -292,7 +288,7 @@ print(f"Jawaban:\n{processed_answer}")
 
 # --- Example Usage ---
 question = "Kapan laporan realisasi penggunaan Dana BOSP harus disampaikan?"  # More focused question
-raw_answer = answer_question(question, embeddings, all_chunks, top_n=3)
+raw_answer = answer_question(question, all_chunks, top_n=3)
 processed_answer = post_process_answer(raw_answer)
 
 print(f"Pertanyaan: {question}")
