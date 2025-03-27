@@ -107,10 +107,10 @@ class SiteController extends Controller
     private function askFastAPI(string $question): string
     {
         // Untuk localhost
-         $api_url = 'http://127.0.0.1:8000/ask';
+        // $api_url = 'http://127.0.0.1:8000/ask';
 
         // Gunakan URL dari Render
-        // $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
+        $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
 
         $client = new Client();
 
