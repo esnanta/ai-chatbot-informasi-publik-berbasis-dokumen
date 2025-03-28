@@ -69,9 +69,12 @@ class SiteController extends Controller
     }
 
 
-    public function actionIndex()
+    public function actionIndex($q=null)
     {
         $model = new QaLog();
+        if(!empty($q)){
+            $model->question = $q;
+        }
 
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()) && $model->validate()) {
 

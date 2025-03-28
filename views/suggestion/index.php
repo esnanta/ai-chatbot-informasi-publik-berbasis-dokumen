@@ -19,9 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-md-10">
             <h1><?= Html::encode($this->title) ?></h1>
         </div>
-        <div class="col-md-2">
-            <?= Html::a(Yii::t('app', 'Ask Chatbot'), ['/site/index'], ['class' => 'btn btn-success pull-right']) ?>
-        </div>
     </div>
 
     <?php Pjax::begin(); ?>
@@ -32,7 +29,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'question:ntext',
+            [
+                'attribute' => 'question',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return Html::encode($model->question) . ' ' .
+                        Html::a(
+                            'Ask Chatbot',
+                            ['site/index', 'q' => $model->question],
+                            ['target' => '_blank', 'title' => 'Lihat detail', 'style' => 'margin-left: 5px;']
+                        );
+                },
+            ],
             'category:ntext',
             'description:ntext',
             'created_at',
