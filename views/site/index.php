@@ -12,9 +12,29 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        Sumber data: <b>Permendikbudristek No. 63 Tahun 2023</b>.
-    </p>
+    <table class="table table-bordered">
+        <tr>
+            <td><b>Document</b></td>
+            <td><?= Html::a('Permendikbudristek No. 63 Tahun 2023', 'https://github.com/esnanta/ai-chatbot-dana-bos-api/blob/main/knowledge_base/Permendikbudriset_No_63_Tahun_2023.pdf', ['target' => '_blank']) ?></td>
+        </tr>
+        <tr>
+            <td><b>Remark</b></td>
+            <td>
+                Model yang digunakan berusaha memahami arti pertanyaan dan informasi yang tersedia
+                <b>berdasarkan kemiripan</b>. Potongan informasi kemudian dipilih dan ditampilkan
+                sebanyak 3 jawaban yang paling mendekati. Bantuan <?= Html::a('pertanyaan', ['suggestion/index']) ?>.
+            </td>
+        </tr>
+        <tr>
+            <td><b>About</b></td>
+            <td>Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</td>
+        </tr>
+        <tr>
+            <td><b>Log</b></td>
+            <td>Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</td>
+        </tr>
+    </table>
+
 
     <?php $form = ActiveForm::begin([
         'id' => 'chatbot-form',
@@ -53,19 +73,6 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
         <button id="upvote-btn" class="btn btn-success">👍 Upvote</button>
         <button id="downvote-btn" class="btn btn-danger">👎 Downvote</button>
     </div>
-
-    <hr>
-
-    <p>
-        <b>Informasi Tambahan:</b>
-    </p>
-    <ul>
-        <li><b>Jawaban :</b> Model yang digunakan berusaha memahami arti pertanyaan dan informasi
-            yang tersedia berdasarkan kemiripan. Potongan informasi kemudian dipilih dan
-            ditampilkan sebanyak 3 jawaban yang paling mendekati.</li>
-        <li><b>About:</b> Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</li>
-        <li><b>Log:</b> Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</li>
-    </ul>
 
 </div>
 
