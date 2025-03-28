@@ -14,15 +14,13 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
 
     <table class="table table-bordered">
         <tr>
-            <td><b>Document</b></td>
+            <td><b>Dasar</b></td>
             <td><?= Html::a('Permendikbudristek No. 63 Tahun 2023', 'https://github.com/esnanta/ai-chatbot-dana-bos-api/blob/main/knowledge_base/Permendikbudriset_No_63_Tahun_2023.pdf', ['target' => '_blank']) ?></td>
         </tr>
         <tr>
-            <td><b>Remark</b></td>
+            <td><b>Bantuan</b></td>
             <td>
-                Model yang digunakan berusaha memahami arti pertanyaan dan informasi yang tersedia
-                <b>berdasarkan kemiripan</b>. Potongan informasi kemudian dipilih dan ditampilkan
-                sebanyak 3 jawaban yang paling mendekati. Bantuan <?= Html::a('pertanyaan', ['suggestion/index']) ?>.
+               Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?>.
             </td>
         </tr>
         <tr>
