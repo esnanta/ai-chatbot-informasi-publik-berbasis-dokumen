@@ -25,10 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <p>
             Program ini menggunakan kombinasi model <em>sentence transformer</em> dan
             <em>cross-encoder</em> untuk memberikan jawaban yang relevan.
-            Model <code>all-MiniLM-L6-v2</code> digunakan untuk memahami arti pertanyaan
-            dan mencari informasi yang relevan dari dokumen Permendikbudristek No. 63 Tahun 2023.
-            Kemudian, model <code>cross-encoder/ms-marco-MiniLM-L-6-v2</code> digunakan untuk
-            memastikan bahwa informasi yang dipilih benar-benar menjawab pertanyaan dengan baik.
         </p>
         <ul>
             <li><b>Cakupan Terbatas:</b> Chatbot saat ini hanya dapat menjawab pertanyaan yang
