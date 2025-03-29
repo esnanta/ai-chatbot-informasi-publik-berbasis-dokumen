@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) {
                     return Html::encode($model->question) . ' ' .
                         Html::a(
-                            'Ask Chatbot',
+                            'Ask',
                             ['site/index', 'q' => $model->question],
                             ['title' => 'Lihat detail', 'style' => 'margin-left: 5px;']
                         );

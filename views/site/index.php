@@ -76,11 +76,6 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
         <button id="downvote-btn" class="btn btn-danger">👎 Downvote</button>
     </div>
 
-    <hr>
-
-    <div id="chatbot-logs">
-        <p>Memuat log...</p>
-    </div>
 
 </div>
 
