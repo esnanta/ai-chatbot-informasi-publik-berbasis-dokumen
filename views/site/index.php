@@ -7,20 +7,20 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-$this->title = 'AI Chatbot Layanan Informasi Dana BOS';
+$this->title = 'AI Chatbot Informasi Publik Berbasis Dokumen';
 ?>
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
 
     <table class="table table-bordered">
         <tr>
-            <td><b>Dasar</b></td>
+            <td><b>Studi Kasus</b></td>
             <td><?= Html::a('Permendikbudristek No. 63 Tahun 2023', 'https://github.com/esnanta/ai-chatbot-dana-bos-api/blob/main/knowledge_base/Permendikbudriset_No_63_Tahun_2023.pdf', ['target' => '_blank']) ?></td>
         </tr>
         <tr>
             <td><b>Bantuan</b></td>
             <td>
-               Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?>.
+               Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?>, atau.
             </td>
         </tr>
         <tr>

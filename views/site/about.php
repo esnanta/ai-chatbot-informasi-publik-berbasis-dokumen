@@ -9,10 +9,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="about-program">
-    <h2>AI Chatbot Berbasis Dokumen untuk Layanan Informasi Publik</h2>
+    <h2>AI Chatbot Informasi Publik Berbasis Dokumen</h2>
 
 	<p>
-		<strong>Chatbot AI Layanan Informasi Publik</strong> dirancang untuk membantu 
+		<strong>Chatbot AI</strong> dirancang untuk membantu 
 		<strong>memahami dokumen</strong> secara otomatis, sehingga pengguna dapat 
 		<strong>mengakses informasi</strong> dengan lebih cepat dan mudah.
 
