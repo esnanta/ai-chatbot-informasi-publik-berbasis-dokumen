@@ -1,0 +1,21 @@
+2025-03-29 23:22:40,254 - INFO - Loading models and data...
+2025-03-29 23:22:40,254 - INFO - Load pretrained SentenceTransformer: paraphrase-MiniLM-L3-v2
+2025-03-29 23:22:40,268 - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2025-03-29 23:22:40,932 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/modules.json HTTP/1.1" 200 0
+2025-03-29 23:22:41,344 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/config_sentence_transformers.json HTTP/1.1" 200 0
+2025-03-29 23:22:41,647 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/README.md HTTP/1.1" 200 0
+2025-03-29 23:22:42,060 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/modules.json HTTP/1.1" 200 0
+2025-03-29 23:22:42,477 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/sentence_bert_config.json HTTP/1.1" 200 0
+2025-03-29 23:22:42,781 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/adapter_config.json HTTP/1.1" 404 0
+2025-03-29 23:22:43,185 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/config.json HTTP/1.1" 200 0
+2025-03-29 23:22:44,218 - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/paraphrase-MiniLM-L3-v2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2025-03-29 23:22:44,723 - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/paraphrase-MiniLM-L3-v2/revision/main HTTP/1.1" 200 3698
+2025-03-29 23:22:45,135 - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/paraphrase-MiniLM-L3-v2 HTTP/1.1" 200 3698
+2025-03-29 23:22:45,548 - DEBUG - https://huggingface.co:443 "HEAD /cross-encoder/ms-marco-TinyBERT-L-6/resolve/main/config.json HTTP/1.1" 307 0
+2025-03-29 23:22:45,944 - DEBUG - https://huggingface.co:443 "HEAD /cross-encoder/ms-marco-TinyBERT-L6/resolve/main/config.json HTTP/1.1" 200 0
+2025-03-29 23:22:46,463 - DEBUG - https://huggingface.co:443 "HEAD /cross-encoder/ms-marco-TinyBERT-L-6/resolve/main/tokenizer_config.json HTTP/1.1" 307 0
+2025-03-29 23:22:46,874 - DEBUG - https://huggingface.co:443 "HEAD /cross-encoder/ms-marco-TinyBERT-L6/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2025-03-29 23:22:47,285 - DEBUG - https://huggingface.co:443 "HEAD /cross-encoder/ms-marco-TinyBERT-L-6/resolve/main/README.md HTTP/1.1" 307 0
+2025-03-29 23:22:47,617 - DEBUG - https://huggingface.co:443 "HEAD /cross-encoder/ms-marco-TinyBERT-L6/resolve/main/README.md HTTP/1.1" 200 0
+2025-03-29 23:22:47,998 - DEBUG - https://huggingface.co:443 "GET /api/models/cross-encoder/ms-marco-TinyBERT-L-6 HTTP/1.1" 307 81
+2025-03-29 23:22:48,299 - DEBUG - https://huggingface.co:443 "GET /api/models/cross-encoder/ms-marco-TinyBERT-L6 HTTP/1.1" 200 1915

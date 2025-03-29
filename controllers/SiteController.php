@@ -18,6 +18,9 @@ use yii\httpclient\Client;
 
 class SiteController extends Controller
 {
+    const API_URL_LOCALHOST = 'http://127.0.0.1:8000/ask';
+    const API_URL_RENDER = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
+
     /**
      * {@inheritdoc}
      */
@@ -109,11 +112,9 @@ class SiteController extends Controller
 
     private function askFastAPI(string $question): string
     {
-        // Untuk localhost
-        // $api_url = 'http://127.0.0.1:8000/ask';
-
-        // Gunakan URL dari Render
-        $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
+        // Tentukan URL berdasarkan lingkungan
+        $isLocalhost = in_array($_SERVER['HTTP_HOST'], ['127.0.0.1', 'localhost']);
+        $api_url = $isLocalhost ? self::API_URL_LOCALHOST : self::API_URL_RENDER;
 
         $client = new Client();
 
