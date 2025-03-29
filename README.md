@@ -3,11 +3,11 @@
 
 ## Gambaran Umum
 
-Proyek ini adalah prototipe awal chatbot berbasis AI yang dirancang untuk memberikan informasi terkait regulasi dari Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi (Permendikbudristek) Nomor 63 Tahun 2023. Chatbot ini berfokus pada pertanyaan seputar pengelolaan Dana Bantuan Operasional Sekolah (BOS), termasuk BOP PAUD (Bantuan Operasional Pendidikan Anak Usia Dini), BOS (Bantuan Operasional Sekolah), dan BOP Kesetaraan.
+Proyek ini merupakan prototipe chatbot berbasis AI yang dirancang untuk memahami dan menyajikan informasi dari dokumen secara otomatis. Dengan teknologi AI, chatbot ini mampu menelusuri dokumen regulasi dan memberikan jawaban yang relevan, sehingga pengguna dapat mengakses informasi dengan lebih cepat dan mudah.
 
-Chatbot ini menggunakan pendekatan **sentence transformer**, yang berarti keakuratan jawaban sangat bergantung pada cara penyampaian pertanyaan dan kata kunci yang digunakan. Untuk hasil optimal, pengguna disarankan menggunakan frasa yang sesuai dengan isi regulasi Permendikbudristek No. 63/2023.
+Chatbot ini menggunakan kombinasi SentenceTransformer untuk pencocokan semantik dan CrossEncoder untuk meningkatkan akurasi dalam pemilihan jawaban. Dengan pendekatan ini, chatbot dapat memberikan respons yang lebih sesuai dengan pertanyaan yang diajukan, mendukung transparansi, akuntabilitas, serta kepatuhan terhadap regulasi.
 
-**Ini adalah prototipe awal yang mungkin belum selalu memberikan jawaban yang akurat atau lengkap.** Jawaban chatbot didasarkan pada dokumen regulasi yang tersedia dan tidak boleh dianggap sebagai nasihat hukum. Dalam beberapa kasus, chatbot dapat memberikan jawaban yang bersifat umum atau repetitif.
+Penggunaan chatbot diharapkan dapat meningkatkan efisiensi layanan administrasi, mempermudah akses informasi, dan membantu dalam pengambilan keputusan yang lebih tepat.
 
 ## Arsitektur
 
