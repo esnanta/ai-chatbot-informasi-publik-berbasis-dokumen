@@ -20,7 +20,7 @@ $this->title = 'AI Chatbot Informasi Publik Berbasis Dokumen';
         <tr>
             <td><b>Bantuan</b></td>
             <td>
-               Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?>, atau.
+               Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?>, atau kreasi lainnya.
             </td>
         </tr>
         <tr>
