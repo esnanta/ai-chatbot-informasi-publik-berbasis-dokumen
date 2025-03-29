@@ -1,4 +1,4 @@
-# AI Chatbot Berbasis Dokumen untuk Layanan Informasi Publik  
+# AI Chatbot Informasi Publik Berbasis Dokumen
 **Studi Kasus: Permendikbudristek No. 63/2023 (Dana BOS)**
 
 ## Gambaran Umum
