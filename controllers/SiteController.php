@@ -110,10 +110,10 @@ class SiteController extends Controller
     private function askFastAPI(string $question): string
     {
         // Untuk localhost
-        // $api_url = 'http://127.0.0.1:8000/ask';
+        $api_url = 'http://127.0.0.1:8000/ask';
 
         // Gunakan URL dari Render
-        $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
+        // $api_url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
 
         $client = new Client();
 
@@ -132,6 +132,23 @@ class SiteController extends Controller
             Yii::error('FastAPI request failed: ' . $e->getMessage());
         }
         return 'Terjadi kesalahan saat mengambil jawaban.';
+    }
+    public function actionLogs()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $url = 'https://ai-chatbot-informasi-dana-bos.onrender.com/logs'; // Sesuaikan dengan URL FastAPI-mu
+        try {
+            $logs = file_get_contents($url);
+            $logs = json_decode($logs, true);
+
+            if (isset($logs['logs'])) {
+                return ['logs' => $logs['logs']];
+            }
+        } catch (\Exception $e) {
+            Yii::error('Gagal mengambil logs: ' . $e->getMessage(), __METHOD__);
+        }
+        return ['logs' => []];
     }
 
     public function actionUpvote()

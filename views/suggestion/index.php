@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         Html::a(
                             'Ask Chatbot',
                             ['site/index', 'q' => $model->question],
-                            ['target' => '_blank', 'title' => 'Lihat detail', 'style' => 'margin-left: 5px;']
+                            ['title' => 'Lihat detail', 'style' => 'margin-left: 5px;']
                         );
                 },
             ],

@@ -12,12 +12,17 @@ $this->params['breadcrumbs'][] = $this->title;
     <h2>Tentang Chatbot AI</h2>
 
     <p>
-        Chatbot AI Layanan Informasi Dana BOS dikembangkan untuk menyediakan
-        informasi terkait <b>Peraturan Menteri Pendidikan, Kebudayaan, Riset,
-            dan Teknologi (Permendikbudristek) Nomor 63 Tahun 2023</b>.
-        Program ini dirancang untuk menjawab pertanyaan tentang pengelolaan
-        Dana Bantuan Operasional Satuan Pendidikan (BOSP), termasuk Dana BOP PAUD, Dana BOS,
-        dan Dana BOP Kesetaraan.
+        Chatbot AI Layanan Informasi Dana BOS hadir untuk mempermudah akses informasi terkait
+        <b>
+            Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi (Permendikbudristek)
+            Nomor 63 Tahun 2023
+        </b>.
+    </p>
+    <p>
+        Sebagai layanan informasi publik, chatbot ini bertujuan membantu pengguna memahami regulasi dengan lebih mudah,
+        sehingga pengelolaan dana dapat dilakukan secara profesional, transparan, dan sesuai aturan.
+        Dengan teknologi AI, layanan ini diharapkan dapat meningkatkan akuntabilitas dan efisiensi
+        pengelolaan Dana BOS.
     </p>
 
     <div class="alert alert-warning" role="alert">

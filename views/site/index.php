@@ -43,17 +43,21 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
 
     <!-- ✅ DITAMBAHKAN: Input untuk pencarian dengan fitur autocomplete -->
     <div style="position: relative;">
-        <?= $form->field($model, 'question')->textInput([
+        <?= $form->field($model, 'question', [
+            'template' => "{input}\n{label}\n{error}",
+            'options' => ['class' => 'form-floating']
+        ])->textInput([
             'id' => 'question-input',
-            'autofocus' => true,
+            'class' => 'form-control',
             'placeholder' => 'Ketik pertanyaan...',
             'autocomplete' => 'off'
-        ]) ?>
+        ])->label('Pertanyaan') ?>
+    </div>
         <div id="suggestions"></div>
     </div>
     <br>
     <div class="form-group">
-        <?= Html::submitButton('Send', ['class' => 'btn btn-primary']) ?>
+        <?= Html::submitButton('Ask', ['class' => 'btn btn-primary']) ?>
         <!-- ✅ DITAMBAHKAN: Loading Indicator -->
         <div id="loading-indicator" style="display: none;">
             <div class="spinner"></div> Loading...
@@ -70,6 +74,12 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
     <div id="vote-buttons" style="display: none; margin-top: 10px;">
         <button id="upvote-btn" class="btn btn-success">👍 Upvote</button>
         <button id="downvote-btn" class="btn btn-danger">👎 Downvote</button>
+    </div>
+
+    <hr>
+
+    <div id="chatbot-logs">
+        <p>Memuat log...</p>
     </div>
 
 </div>
@@ -184,6 +194,50 @@ $(document).ready(function() {
             }
         });
     });
+    
+    function loadLogs() {
+        $.get("site/logs", function(data) {
+            const chatHistory = document.getElementById('chat-history');
+            let logsContainer = $("#chatbot-logs");
+            logsContainer.html(""); // Kosongkan kontainer
+    
+            if (data?.logs?.length > 0) {
+                let table = $("<table class='table table-striped'>");
+                let thead = $("<thead>").append("<tr><th>Pertanyaan</th><th>Jawaban</th><th>Waktu</th></tr>");
+                let tbody = $("<tbody>");
+    
+                data.logs.forEach(function(log) {
+                    let question = log?.question || "Tidak tersedia";
+                    let answer = log?.answer || "Tidak tersedia";
+                    let time = log?.timestamp ? new Date(log.timestamp).toLocaleString() : "Waktu tidak tersedia";
+    
+                    // Hanya tambahkan baris jika data valid
+                    if (question !== "Tidak tersedia" && answer !== "Tidak tersedia") {
+                        let row = $("<tr>");
+                        row.append("<td>" + question + "</td>");
+                        row.append("<td>" + answer + "</td>");
+                        row.append("<td>" + time + "</td>");
+                        tbody.append(row);
+                    }
+                });
+    
+                if (tbody.children().length === 0) {
+                    logsContainer.html("<p>Belum ada log yang valid tersedia.</p>");
+                } else {
+                    table.append(thead).append(tbody);
+                    logsContainer.append(table);
+                }
+            } else {
+                logsContainer.html("<p>Belum ada log tersedia.</p>");
+            }
+        }, "json").fail(function() {
+            $("#chatbot-logs").html("<p>Gagal mengambil log.</p>");
+        });
+    }
+
+    // Load logs saat halaman dibuka
+    loadLogs();
+    setInterval(loadLogs, 10000); // Refresh logs setiap 10 detik
 
 });
 JS
@@ -240,3 +294,4 @@ JS
         }
     }
 </style>
+
