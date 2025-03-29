@@ -279,4 +279,8 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+    public function actionDisclaimer()
+    {
+        return $this->render('disclaimer');
+    }
 }
