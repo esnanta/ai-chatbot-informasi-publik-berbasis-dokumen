@@ -7,29 +7,24 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-$this->title = 'AI Chatbot Informasi Publik Berbasis Dokumen';
+$this->title = 'AI Chatbot Layanan Informasi Dana BOS';
 ?>
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
 
     <table class="table table-bordered">
         <tr>
-            <td><b>Studi Kasus</b></td>
+            <td><b>Dasar</b></td>
             <td><?= Html::a('Permendikbudristek No. 63 Tahun 2023', 'https://github.com/esnanta/ai-chatbot-dana-bos-api/blob/main/knowledge_base/Permendikbudriset_No_63_Tahun_2023.pdf', ['target' => '_blank']) ?></td>
         </tr>
         <tr>
-            <td><b>Bantuan</b></td>
+            <td><b>Informasi</b></td>
             <td>
-               Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?>, atau kreasi lainnya.
+                Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?> -
+                <?= Html::a('Log', ['site/log']) ?> -
+                <?= Html::a('About', ['site/about']) ?> -
+                <?= Html::a('Disclaimer', ['site/disclaimer']) ?>
             </td>
-        </tr>
-        <tr>
-            <td><b>About</b></td>
-            <td>Penjelasan mengenai chatbot ini dapat ditemukan di menu <?= Html::a('About', ['site/about']) ?>.</td>
-        </tr>
-        <tr>
-            <td><b>Log</b></td>
-            <td>Riwayat pertanyaan dan jawaban dapat dilihat di menu <?= Html::a('Log', ['site/log']) ?>.</td>
         </tr>
     </table>
 
