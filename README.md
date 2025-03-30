@@ -7,10 +7,9 @@ Proyek ini merupakan prototipe chatbot berbasis AI yang dirancang untuk memahami
 
 DocuQuery menggunakan dua model utama, yaitu SentenceTransformer dan CrossEncoder, serta memanfaatkan FAISS untuk pencarian vektor berbasis kesamaan. 
 
-* SentenceTransformer berfungsi untuk mengubah teks, baik dari dokumen maupun pertanyaan pengguna, menjadi representasi vektor (embedding). Ketika pengguna mengajukan pertanyaan, embedding dari pertanyaan tersebut dibandingkan dengan embedding dari chunk data menggunakan FAISS, yang bertugas mencari beberapa chunk dengan tingkat kesamaan tertinggi.
-
+* SentenceTransformer berfungsi untuk mengubah teks, baik dari dokumen maupun pertanyaan pengguna, menjadi representasi vektor (embedding).
+* Ketika pengguna mengajukan pertanyaan, embedding dari pertanyaan tersebut dibandingkan dengan embedding dari chunk data menggunakan FAISS, yang bertugas mencari beberapa chunk dengan tingkat kesamaan tertinggi.
 * FAISS mengembalikan daftar n chunk yang paling mirip dalam bentuk vektor. Daftar ini kemudian dievaluasi lebih lanjut oleh CrossEncoder, yang memberikan skor relevansi untuk menentukan chunk terbaik berdasarkan makna kontekstualnya.
-
 * Chunk dengan skor tertinggi dari CrossEncoder ditampilkan sebagai jawaban kepada pengguna.
   
 ## Arsitektur
