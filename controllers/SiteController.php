@@ -19,7 +19,7 @@ use yii\httpclient\Client;
 class SiteController extends Controller
 {
     const API_URL_LOCALHOST = 'http://127.0.0.1:8000/ask';
-    const API_URL_RENDER = 'https://ai-chatbot-informasi-dana-bos.onrender.com/ask';
+    const API_URL_RENDER = 'https://ai-chatbot-informasi-publik-berbasis.onrender.com/ask';
 
     /**
      * {@inheritdoc}
