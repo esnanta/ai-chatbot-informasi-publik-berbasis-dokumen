@@ -41,7 +41,7 @@ class QaLogSearch extends QaLog
      */
     public function search($params, $formName = null)
     {
-        $query = QaLog::find();
+        $query = QaLog::find()->orderBy(['created_at' => SORT_DESC]);
 
         // add conditions that should always apply here
 

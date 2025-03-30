@@ -1,4 +1,0 @@
-1. run server and database
-2. run sql/aichatbot.sql
-3. run api/chatbot.bat
-4. localhost/ai-chatbot-informasi-dana-bos/web

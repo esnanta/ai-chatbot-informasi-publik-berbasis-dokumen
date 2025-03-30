@@ -31,8 +31,18 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
-            'question:ntext',
-            'answer:ntext',
+            [
+                'attribute' => 'question',
+                'format' => 'ntext',
+                'contentOptions' => ['style' => 'width: 30%; word-wrap: break-word;'],
+                'headerOptions' => ['style' => 'width: 30%;'],
+            ],
+            [
+                'attribute' => 'answer',
+                'format' => 'html',
+                'contentOptions' => ['style' => 'width: 50%; word-wrap: break-word;'],
+                'headerOptions' => ['style' => 'width: 50%;'],
+            ],
             'upvote',
             'downvote',
             [

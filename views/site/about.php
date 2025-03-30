@@ -16,8 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
     <p>
         Seharusnya program ini menggunakan kombinasi model <em>sentence transformer</em> dan
-        <em>cross encoder</em> untuk memberikan jawaban yang relevan. Namun
-        mengingat sumber daya maka digunakan <em>sentence transformer</em> saja
+        <em>cross encoder</em> untuk memberikan jawaban yang relevan. Namun mengingat sumber
+        daya saat online, maka digunakan <em>sentence transformer</em> saja
         sehingga performa menurun.
     </p>
 
