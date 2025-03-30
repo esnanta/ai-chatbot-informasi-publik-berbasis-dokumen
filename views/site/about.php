@@ -9,47 +9,24 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="about-program">
-    <h2>AI Chatbot Informasi Publik Berbasis Dokumen</h2>
-
-	<p>
-		<strong>Chatbot AI</strong> dirancang untuk membantu 
-		<strong>memahami dokumen</strong> secara otomatis, sehingga pengguna dapat 
-		<strong>mengakses informasi</strong> dengan lebih cepat dan mudah.
-
-		Dengan <strong>teknologi AI</strong>, chatbot menelusuri dan memberikan jawaban 
-		berdasarkan <strong>naskah dokumen</strong> yang relevan, mendukung 
-		<strong>transparansi</strong>, <strong>akuntabilitas</strong>, serta 
-		<strong>kepatuhan terhadap regulasi</strong>.
-
-		Penggunaan chatbot diharap dapat <strong>mempermudah akses informasi</strong>, 
-		<strong>meningkatkan efisiensi layanan administrasi</strong>, dan mendukung 
-		<strong>pengambilan keputusan</strong> yang lebih tepat.
-	</p>
+    <h2>AI Chatbot Berbasis Dokumen</h2>
+    <p>
+        Informasi yang diberikan oleh chatbot bersifat informatif dan tidak dapat dianggap
+        sebagai nasihat hukum atau keputusan resmi.
+    </p>
+    <p>
+        Seharusnya program ini menggunakan kombinasi model <em>sentence transformer</em> dan
+        <em>cross encoder</em> untuk memberikan jawaban yang relevan. Namun
+        mengingat sumber daya maka digunakan <em>sentence transformer</em> saja
+        sehingga performa menurun.
+    </p>
 
     <div class="alert alert-warning" role="alert">
-        <ul class="ps-3">
-            <li>
-				<strong>Transparansi dan Akuntabilitas</strong><br> 
-				Chatbot AI membantu menyajikan informasi dari dokumen 
-				resmi sehingga meningkatkan keterbukaan 
-				dan mencegah kesalahan interpretasi.
-			</li>
-            <li>
-				<strong>Efisiensi Administratif</strong><br>
-				Dapat mengurangi beban kerja pegawai 
-				dalam menjawab pertanyaan berulang terkait regulasi,
-				sehingga memungkinkan fokus pada tugas yang lebih strategis.
-			</li>
-            <li>
-				<strong>Aksesibilitas Informasi</strong><br>
-				Mempermudah masyarakat ataupun pengelola dalam 
-				memahami dokumen sehingga regulasi lebih mudah dipahami dan diterapkan.
-			</li>
-            <li>
-				<strong>Peningkatan Kepatuhan</strong><br>
-				Membantu memastikan bahwa kebijakan diimplementasikan sesuai regulasi 
-				melalui akses informasi yang lebih cepat dan jelas.
-			</li>
+        <ul>
+            <li><b>Cakupan Terbatas:</b> Chatbot saat ini hanya dapat menjawab pertanyaan yang berkaitan dengan isi Permendikbudristek No. 63 Tahun 2023.</li>
+            <li><b>Sensitivitas Frasa:</b> Kualitas jawaban bergantung pada seberapa mirip pertanyaan dengan informasi yang tersedia. Pertanyaan yang terlalu umum atau menggunakan istilah yang berbeda mungkin menghasilkan jawaban yang kurang relevan.</li>
+            <li><b>Tidak Ada Interpretasi Hukum:</b> Chatbot tidak dirancang untuk memberikan interpretasi hukum atau nasihat profesional.</li>
+            <li><b>Potensi Jawaban Serupa:</b> Dalam beberapa kasus, chatbot dapat memberikan jawaban yang serupa untuk pertanyaan yang memiliki kemiripan makna, meskipun kata-katanya berbeda.</li>
         </ul>
     </div>
 

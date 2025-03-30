@@ -22,9 +22,7 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
             <td>
                 Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?> -
                 <?= Html::a('Log', ['site/log']) ?> -
-                <?= Html::a('About', ['site/about']) ?> -
-                <?= Html::a('Disclaimer', ['site/disclaimer']) ?>
-            </td>
+                <?= Html::a('About', ['site/about']) ?> </td>
         </tr>
     </table>
 
