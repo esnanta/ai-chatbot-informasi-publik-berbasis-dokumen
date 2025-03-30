@@ -3,12 +3,15 @@
 
 ## Gambaran Umum
 
-Proyek ini merupakan prototipe chatbot berbasis AI yang dirancang untuk memahami dan menyajikan informasi dari dokumen secara otomatis. Dengan teknologi AI, chatbot ini mampu menelusuri dokumen regulasi dan memberikan jawaban yang relevan, sehingga pengguna dapat mengakses informasi dengan lebih cepat dan mudah.
+Proyek ini merupakan prototipe chatbot berbasis AI yang dirancang untuk memahami dan menyajikan informasi dari dokumen secara otomatis. Dengan teknologi AI, chatbot menelusuri dokumen regulasi dan memberikan jawaban yang relevan, sehingga pengguna dapat memperoleh informasi dengan cepat dan mudah.
 
-Chatbot ini menggunakan kombinasi SentenceTransformer untuk pencocokan semantik dan CrossEncoder untuk meningkatkan akurasi dalam pemilihan jawaban. Dengan pendekatan ini, chatbot dapat memberikan respons yang lebih sesuai dengan pertanyaan yang diajukan, mendukung transparansi, akuntabilitas, serta kepatuhan terhadap regulasi.
+DocuQuery menggunakan dua model utama, yaitu SentenceTransformer dan CrossEncoder, serta memanfaatkan FAISS untuk pencarian vektor berbasis kesamaan. 
 
-Penggunaan chatbot diharapkan dapat meningkatkan efisiensi layanan administrasi, mempermudah akses informasi, dan membantu dalam pengambilan keputusan yang lebih tepat.
-
+* SentenceTransformer berfungsi untuk mengubah teks, baik dari dokumen maupun pertanyaan pengguna, menjadi representasi vektor (embedding).
+* Ketika pengguna mengajukan pertanyaan, embedding dari pertanyaan tersebut dibandingkan dengan embedding dari chunk data menggunakan FAISS, yang bertugas mencari beberapa chunk dengan tingkat kesamaan tertinggi.
+* FAISS mengembalikan daftar n chunk yang paling mirip dalam bentuk vektor. Daftar ini kemudian dievaluasi lebih lanjut oleh CrossEncoder, yang memberikan skor relevansi untuk menentukan chunk terbaik berdasarkan makna kontekstualnya.
+* Chunk dengan skor tertinggi dari CrossEncoder ditampilkan sebagai jawaban kepada pengguna.
+  
 ## Arsitektur
 
 Proyek ini terdiri dari dua komponen utama:
