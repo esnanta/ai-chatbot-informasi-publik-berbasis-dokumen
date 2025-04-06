@@ -3,7 +3,7 @@
 
 ## Gambaran Umum
 
-Proyek ini merupakan prototipe chatbot berbasis AI yang dirancang untuk memahami dan 
+Proyek ini merupakan prototipe **Document Q&A Bot** yang dirancang untuk memahami dan 
 menyajikan informasi dari dokumen secara otomatis. Dengan memanfaatkan teknologi 
 Pemrosesan Bahasa Alami (NLP), chatbot ini menelusuri dokumen regulasi dan memberikan 
 jawaban yang relevan atas pertanyaan pengguna, memungkinkan akses informasi yang cepat dan mudah.
