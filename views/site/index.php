@@ -7,14 +7,14 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 
-$this->title = 'AI Chatbot Layanan Informasi Dana BOS';
+$this->title = 'DocuQuery';
 ?>
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
-
+    <p>AI Chatbot Layanan Informasi Berbasis Dokumen</p>
     <table class="table table-bordered">
         <tr>
-            <td><b>Dasar</b></td>
+            <td><b>Sumber</b></td>
             <td><?= Html::a('Permendikbudristek No. 63 Tahun 2023', 'https://github.com/esnanta/ai-chatbot-dana-bos-api/blob/main/knowledge_base/Permendikbudriset_No_63_Tahun_2023.pdf', ['target' => '_blank']) ?></td>
         </tr>
         <tr>
@@ -31,10 +31,10 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
         'id' => 'chatbot-form',
         'action' => Url::to(['site/index']),
         'options' => ['class' => 'form-horizontal'],
-        'enableAjaxValidation' => false, // AJAX ditangani secara manual
+        'enableAjaxValidation' => false,
     ]); ?>
 
-    <!-- ✅ DITAMBAHKAN: Input untuk pencarian dengan fitur autocomplete -->
+    <!-- Input untuk pencarian dengan fitur autocomplete -->
     <div style="position: relative;">
         <?= $form->field($model, 'question', [
             'template' => "{input}\n{label}\n{error}",
@@ -45,14 +45,17 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
             'placeholder' => 'Ketik pertanyaan...',
             'autocomplete' => 'off'
         ])->label('Pertanyaan') ?>
-    </div>
-        <div id="suggestions"></div>
+        <div id="suggestions" style="position: absolute; z-index: 1000; width: 100%;"></div>
     </div>
     <br>
     <div class="form-group">
-        <?= Html::submitButton('Ask', ['class' => 'btn btn-primary']) ?>
-        <!-- ✅ DITAMBAHKAN: Loading Indicator -->
-        <div id="loading-indicator" style="display: none;">
+        <?= Html::submitButton('Ask', [
+            'class' => 'btn btn-primary',
+            'id' => 'submit-ask-btn', // Tambahkan ID
+            'disabled' => true // Set disabled secara default
+        ]) ?>
+        <!-- Loading Indicator -->
+        <div id="loading-indicator" style="display: none; margin-left: 10px;">
             <div class="spinner"></div> Loading...
         </div>
     </div>
@@ -69,17 +72,19 @@ $this->title = 'AI Chatbot Layanan Informasi Dana BOS';
         <button id="downvote-btn" class="btn btn-danger">👎 Downvote</button>
     </div>
 
-
 </div>
 
 <?php
 $this->registerJs(<<<JS
 $(document).ready(function() {
 
-    // ✅ DITAMBAHKAN: Fitur Autocomplete untuk pertanyaan
+    // --- PERUBAHAN 1: Aktifkan tombol submit setelah dokumen siap ---
+    $('#submit-ask-btn').prop('disabled', false);
+
+    // Fitur Autocomplete untuk pertanyaan
     $("#question-input").on("keyup", function() {
         let query = $(this).val();
-        
+
         if (query.length < 3) {
             $("#suggestions").html("").hide();
             return;
@@ -87,20 +92,26 @@ $(document).ready(function() {
 
         $.get("site/suggestion", { query: query }, function(data) {
             let suggestionBox = $("#suggestions");
-            suggestionBox.html("").show();
+            suggestionBox.html("").show(); // Pastikan tampil saat ada data
 
-            data.forEach(function(item) {
-                let div = $("<div>").text(item.question).addClass("suggestion-item");
-                div.on("click", function() {
-                    $("#question-input").val(item.question);
-                    suggestionBox.hide();
+            if (data && data.length > 0) {
+                data.forEach(function(item) {
+                    let div = $("<div>").text(item.question).addClass("suggestion-item");
+                    div.on("click", function() {
+                        $("#question-input").val(item.question);
+                        suggestionBox.hide();
+                    });
+                    suggestionBox.append(div);
                 });
-                suggestionBox.append(div);
-            });
-        }, "json");
+            } else {
+                suggestionBox.hide(); // Sembunyikan jika tidak ada saran
+            }
+        }, "json").fail(function() {
+             $("#suggestions").hide(); // Sembunyikan jika request gagal
+        });;
     });
 
-    // ✅ DITAMBAHKAN: Menutup rekomendasi saat klik di luar
+    // Menutup rekomendasi saat klik di luar
     $(document).on("click", function(event) {
         if (!$(event.target).closest("#question-input, #suggestions").length) {
             $("#suggestions").hide();
@@ -113,9 +124,12 @@ $(document).ready(function() {
         var form = $(this);
         var formData = form.serialize();
 
-        // ✅ DITAMBAHKAN: Tampilkan loading indicator
+        // Tampilkan loading indicator & disable tombol submit
         $('#loading-indicator').show();
+        $('#submit-ask-btn').prop('disabled', true); // Disable tombol saat proses
         $('#answer').html(''); // Kosongkan jawaban sebelumnya
+        $('#vote-buttons').hide(); // Sembunyikan tombol vote lama
+        $('#answer-id').val(''); // Kosongkan ID jawaban lama
 
         $.ajax({
             url: form.attr('action'),
@@ -123,15 +137,16 @@ $(document).ready(function() {
             data: formData,
             dataType: 'json',
             success: function(response) {
-                // Sembunyikan loading indicator
-                $('#loading-indicator').hide();
-
                 if (response && response.answer) {
                     // Tampilkan jawaban
                     $('#answer').html('<b>Answer:</b> ' + response.answer);
 
                     // Simpan ID jawaban untuk upvote/downvote
                     $('#answer-id').val(response.id);
+
+                    // --- PERUBAHAN 2: Pastikan tombol vote enabled sebelum ditampilkan ---
+                    $('#upvote-btn').prop('disabled', false);
+                    $('#downvote-btn').prop('disabled', false);
 
                     // Tampilkan tombol upvote/downvote
                     $('#vote-buttons').show();
@@ -140,75 +155,113 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                // Sembunyikan loading indicator pada error
+                // Tampilkan detail error jika ada
+                $('#answer').html('<b>Error:</b> ' + error + ' - ' + xhr.responseText);
+            },
+            complete: function() {
+                 // Sembunyikan loading indicator & enable tombol submit lagi setelah selesai 
+                 // (baik sukses maupun error)
                 $('#loading-indicator').hide();
-                $('#answer').html('<b>Error:</b> ' + error);
+                $('#submit-ask-btn').prop('disabled', false);
             }
         });
     });
 
-    // ✅ DITAMBAHKAN: Handle Upvote
+    // Handle Upvote
     var csrfToken = $('meta[name="csrf-token"]').attr("content");
 
     $('#upvote-btn').on('click', function() {
         var id = $('#answer-id').val();
+        if (!id) return; 
+
+        // --- PERUBAHAN 2: Disable kedua tombol segera setelah diklik ---
+        $('#upvote-btn').prop('disabled', true);
+        $('#downvote-btn').prop('disabled', true);
+
         $.post({
-            url: 'site/upvote',
+            url: 'site/upvote', // Pastikan URL benar
             data: {id: id, _csrf: csrfToken},
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    alert('Upvote berhasil! Total Upvotes: ' + response.upvote);
+                    // Tampilkan pesan atau update UI (opsional)
+                    alert('Upvote berhasil!');
+                    $('#upvote-btn').addClass('btn-outline-success').removeClass('btn-success'); // Contoh feedback visual
                 } else {
-                    alert('Upvote gagal!');
+                    alert('Upvote gagal! ' + (response.message || ''));
+                    // Jika gagal, mungkin ingin mengaktifkan kembali tombol? Tergantung kebutuhan.
+                    $('#upvote-btn').prop('disabled', false);
+                    $('#downvote-btn').prop('disabled', false);
                 }
+            },
+            error: function() {
+                alert('Terjadi kesalahan saat mengirim upvote.');
+                 // Jika gagal, mungkin ingin mengaktifkan kembali tombol? Tergantung kebutuhan.
+                 // $('#upvote-btn').prop('disabled', false);
+                 // $('#downvote-btn').prop('disabled', false);
             }
         });
     });
 
-    // ✅ DITAMBAHKAN: Handle Downvote
+    // Handle Downvote
     $('#downvote-btn').on('click', function() {
         var id = $('#answer-id').val();
+         if (!id) return; 
+
+        $('#upvote-btn').prop('disabled', true);
+        $('#downvote-btn').prop('disabled', true);
+
         $.post({
-            url: 'site/downvote',
+            url: 'site/downvote', 
             data: {id: id, _csrf: csrfToken},
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    alert('Downvote berhasil! Total Downvotes: ' + response.downvote);
+                    alert('Downvote berhasil!');
+                     $('#downvote-btn').addClass('btn-outline-danger').removeClass('btn-danger'); // Contoh feedback visual
                 } else {
-                    alert('Downvote gagal!');
+                    alert('Downvote gagal! ' + (response.message || ''));
+                    $('#upvote-btn').prop('disabled', false);
+                    $('#downvote-btn').prop('disabled', false);
                 }
+            },
+             error: function() {
+                alert('Terjadi kesalahan saat mengirim downvote.');
+                 $('#upvote-btn').prop('disabled', false);
+                 $('#downvote-btn').prop('disabled', false);
             }
         });
     });
-    
+
+    // Fungsi loadLogs tidak diubah, asumsikan sudah benar
     function loadLogs() {
-        $.get("site/logs", function(data) {
-            const chatHistory = document.getElementById('chat-history');
-            let logsContainer = $("#chatbot-logs");
+        $.get("site/logs", function(data) { // Pastikan URL benar
+            const chatHistory = document.getElementById('chat-history'); // Pastikan elemen ini ada jika digunakan
+            let logsContainer = $("#chatbot-logs"); // Pastikan elemen ini ada di HTML
+            if (!logsContainer.length) return; // Keluar jika elemen tidak ditemukan
+
             logsContainer.html(""); // Kosongkan kontainer
-    
+
             if (data?.logs?.length > 0) {
                 let table = $("<table class='table table-striped'>");
                 let thead = $("<thead>").append("<tr><th>Pertanyaan</th><th>Jawaban</th><th>Waktu</th></tr>");
                 let tbody = $("<tbody>");
-    
+
                 data.logs.forEach(function(log) {
                     let question = log?.question || "Tidak tersedia";
                     let answer = log?.answer || "Tidak tersedia";
-                    let time = log?.timestamp ? new Date(log.timestamp).toLocaleString() : "Waktu tidak tersedia";
-    
-                    // Hanya tambahkan baris jika data valid
-                    if (question !== "Tidak tersedia" && answer !== "Tidak tersedia") {
+                    let time = log?.timestamp ? new Date(log.timestamp * 1000).toLocaleString() : "Waktu tidak tersedia"; // Asumsi timestamp dalam detik
+
+                    // Hanya tambahkan baris jika data valid (opsional, tergantung kebutuhan)
+                    // if (question !== "Tidak tersedia" && answer !== "Tidak tersedia") {
                         let row = $("<tr>");
-                        row.append("<td>" + question + "</td>");
-                        row.append("<td>" + answer + "</td>");
-                        row.append("<td>" + time + "</td>");
+                        row.append($("<td>").text(question)); // Gunakan .text() untuk keamanan
+                        row.append($("<td>").text(answer));
+                        row.append($("<td>").text(time));
                         tbody.append(row);
-                    }
+                    // }
                 });
-    
+
                 if (tbody.children().length === 0) {
                     logsContainer.html("<p>Belum ada log yang valid tersedia.</p>");
                 } else {
@@ -218,52 +271,67 @@ $(document).ready(function() {
             } else {
                 logsContainer.html("<p>Belum ada log tersedia.</p>");
             }
-        }, "json").fail(function() {
-            $("#chatbot-logs").html("<p>Gagal mengambil log.</p>");
+        }, "json").fail(function(jqXHR, textStatus, errorThrown) {
+             let logsContainer = $("#chatbot-logs");
+             if (logsContainer.length) {
+                 logsContainer.html("<p>Gagal mengambil log: " + textStatus + ", " + errorThrown + "</p>");
+             }
         });
     }
 
-    // Load logs saat halaman dibuka
-    loadLogs();
-    setInterval(loadLogs, 10000); // Refresh logs setiap 10 detik
+    // Pastikan elemen #chatbot-logs ada di HTML Anda di suatu tempat agar loadLogs berfungsi
+    // Contoh: <div id="chatbot-logs"></div>
+
+    // Load logs saat halaman dibuka (jika elemennya ada)
+    // if ($("#chatbot-logs").length) {
+    //     loadLogs();
+    //     setInterval(loadLogs, 10000); // Refresh logs setiap 10 detik
+    // }
 
 });
 JS
 );
 ?>
-
 <style>
-    /* ✅ DITAMBAHKAN: Styling untuk kotak saran */
+    /* Styling untuk kotak saran */
     #suggestions {
         border: 1px solid #ddd;
-        max-width: 400px;
+        /* max-width: 400px; */ /* Dihapus agar lebar sesuai input */
         background: #fff;
-        position: absolute;
-        z-index: 1000;
+        /* position: absolute; */ /* Sudah diatur inline */
+        /* z-index: 1000; */ /* Sudah diatur inline */
         display: none;
-        border-radius: 5px;
+        border-radius: 0 0 5px 5px; /* Rapikan sudut bawah */
         overflow: hidden;
         box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        max-height: 200px; /* Batasi tinggi jika saran banyak */
+        overflow-y: auto; /* Tambahkan scroll jika perlu */
+        margin-top: -1px; /* Rapatkan dengan input */
     }
     .suggestion-item {
-        padding: 8px;
+        padding: 8px 12px; /* Sedikit lebih banyak padding */
         cursor: pointer;
         border-bottom: 1px solid #eee;
+        font-size: 0.9em;
+    }
+    .suggestion-item:last-child {
+        border-bottom: none; /* Hapus border bawah item terakhir */
     }
     .suggestion-item:hover {
         background: #f2f2f2;
     }
 
-    /* ✅ DITAMBAHKAN: Styling untuk loading indicator */
+    /* Styling untuk loading indicator */
     #loading-indicator {
-        display: inline-block; /* Agar sejajar dengan tombol */
-        margin-left: 10px;
+        /* display: inline-block; */ /* Sudah diatur inline */
+        /* margin-left: 10px; */ /* Sudah diatur inline */
         color: #555;
+        vertical-align: middle; /* Posisikan vertikal di tengah tombol */
     }
 
     .spinner {
         border: 4px solid rgba(0, 0, 0, 0.1);
-        border-left-color: #4CAF50; /* Warna hijau */
+        border-left-color: #0d6efd; /* Warna primary Bootstrap */
         border-radius: 50%;
         width: 20px;
         height: 20px;
@@ -281,5 +349,11 @@ JS
             transform: rotate(360deg);
         }
     }
-</style>
 
+    /* Style tambahan untuk tombol vote yang sudah diklik (opsional) */
+    #upvote-btn.btn-outline-success,
+    #downvote-btn.btn-outline-danger {
+        pointer-events: none; /* Mencegah klik lagi meskipun tidak disabled */
+    }
+
+</style>

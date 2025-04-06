@@ -115,7 +115,6 @@ print(f"\nTotal file yang berhasil diekstrak: {len(pdf_texts)}")
 
 # ===============================
 # 3. PREPROCESSING TEKS
-# (Fungsi clean_text Anda dipertahankan)
 # ===============================
 def clean_text(text):
     # This collapses multiple consecutive blank lines into a single blank line,
@@ -152,7 +151,7 @@ print("Chunking texts...")
 
 # Inisialisasi Text Splitter
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=700,      # Ukuran chunk dalam karakter (eksperimen dengan nilai ini)
+    chunk_size=500,      # Ukuran chunk dalam karakter (eksperimen dengan nilai ini)
     chunk_overlap=150,    # Jumlah overlap antar chunk (eksperimen)
     length_function=len,
     is_separator_regex=False,
@@ -229,13 +228,13 @@ logging.info("Loading Embedding and Reranking models...")
 # Embedder (untuk retrieval awal)
 # Pastikan embeddings (jika dimuat dari file) cocok dengan model ini!
 # embedder_model_name = "paraphrase-MiniLM-L3-v2" # Lebih kecil, mungkin kurang akurat
-embedder_model_name = "all-MiniLM-L6-v2"         # Pilihan umum yang baik
-# embedder_model_name = "multi-qa-MiniLM-L6-cos-v1" # Baik untuk Q&A
+# embedder_model_name = "all-MiniLM-L6-v2"         # Pilihan umum yang baik
+embedder_model_name = "multi-qa-MiniLM-L6-cos-v1" # Baik untuk Q&A
 
 # CrossEncoder (untuk reranking)
 # cross_encoder_model_name = "cross-encoder/ms-marco-TinyBERT-L-6" # Sangat kecil
-cross_encoder_model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2" # Pilihan umum yang baik
-# cross_encoder_model_name = "cross-encoder/ms-marco-MiniLM-L-12-v2" # Lebih besar, mungkin lebih akurat
+# cross_encoder_model_name = "cross-encoder/ms-marco-MiniLM-L-6-v2" # Pilihan umum yang baik
+cross_encoder_model_name = "cross-encoder/ms-marco-MiniLM-L-12-v2" # Lebih besar, mungkin lebih akurat
 
 logging.info(f"Using Embedder: {embedder_model_name}")
 logging.info(f"Using CrossEncoder: {cross_encoder_model_name}")

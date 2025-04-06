@@ -12,20 +12,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <h2>AI Chatbot Berbasis Dokumen</h2>
     <p>
         Informasi yang diberikan oleh chatbot bersifat informatif dan tidak dapat dianggap
-        sebagai nasihat hukum atau keputusan resmi.
-    </p>
-    <p>
-        Seharusnya program ini menggunakan kombinasi model <em>sentence transformer</em> dan
-        <em>cross encoder</em> untuk memberikan jawaban yang relevan. Namun mengingat sumber
-        daya saat online, maka digunakan <em>sentence transformer</em> saja
-        sehingga performa menurun.
+        sebagai nasihat hukum.
     </p>
 
     <div class="alert alert-warning" role="alert">
         <ul>
             <li><b>Cakupan Terbatas:</b> Chatbot saat ini hanya dapat menjawab pertanyaan yang berkaitan dengan isi Permendikbudristek No. 63 Tahun 2023.</li>
             <li><b>Sensitivitas Frasa:</b> Kualitas jawaban bergantung pada seberapa mirip pertanyaan dengan informasi yang tersedia. Pertanyaan yang terlalu umum atau menggunakan istilah yang berbeda mungkin menghasilkan jawaban yang kurang relevan.</li>
-            <li><b>Tidak Ada Interpretasi Hukum:</b> Chatbot tidak dirancang untuk memberikan interpretasi hukum atau nasihat profesional.</li>
+            <li><b>Tidak Ada Interpretasi Hukum:</b> Chatbot belum dirancang untuk memberikan interpretasi hukum atau nasihat profesional.</li>
             <li><b>Potensi Jawaban Serupa:</b> Dalam beberapa kasus, chatbot dapat memberikan jawaban yang serupa untuk pertanyaan yang memiliki kemiripan makna, meskipun kata-katanya berbeda.</li>
         </ul>
     </div>
