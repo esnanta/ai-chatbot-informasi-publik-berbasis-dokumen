@@ -12,6 +12,7 @@ $this->title = 'DocuQuery';
 <div class="site-index">
     <h1><?= Html::encode($this->title) ?></h1>
     <p>AI Chatbot Layanan Informasi Berbasis Dokumen</p>
+
     <table class="table table-bordered">
         <tr>
             <td><b>Sumber</b></td>
@@ -23,6 +24,17 @@ $this->title = 'DocuQuery';
                 Contoh <?= Html::a('pertanyaan', ['suggestion/index']) ?> -
                 <?= Html::a('Log', ['site/log']) ?> -
                 <?= Html::a('About', ['site/about']) ?> </td>
+        </tr>
+        <tr>
+            <td><b>Server API</b></td>
+            <td>
+                <!-- === ELEMEN STATUS SERVER === -->
+                <div class="server-status-container mb-3">
+                    <span id="server-status-indicator" class="badge bg-secondary">Mengecek...</span>
+                    <span id="server-status-message" style="font-size: 0.9em; margin-left: 5px;"></span>
+                </div>
+                <!-- === AKHIR ELEMEN STATUS SERVER === -->
+            </td>
         </tr>
     </table>
 
@@ -77,9 +89,70 @@ $this->title = 'DocuQuery';
 </div>
 
 <?php
+$checkServerStatusUrl = Url::to(['site/check-server-status']);
 $this->registerJs(<<<JS
 $(document).ready(function() {
 
+    // --- Fungsi untuk Cek Status Server ---
+    function checkServerStatus() {
+        var statusIndicator = $('#server-status-indicator');
+        var statusMessage = $('#server-status-message');
+
+        statusIndicator.text('Mengecek...').removeClass('bg-success bg-danger bg-warning').addClass('bg-secondary');
+        statusMessage.text(''); // Kosongkan pesan sebelumnya
+
+        $.ajax({
+            url: '$checkServerStatusUrl', // Gunakan variabel PHP
+            type: 'GET',
+            dataType: 'json',
+            timeout: 5000, // Tambahkan timeout untuk request AJAX itu sendiri (misal 5 detik)
+            success: function(response) {
+                if (response && response.status) {
+                    if (response.status === 'online') {
+                        statusIndicator.text('Online').removeClass('bg-secondary bg-danger').addClass('bg-success');
+                        statusMessage.text(''); // Kosongkan pesan jika online
+                        // Anda bisa mengaktifkan form di sini jika diperlukan
+                        // $('#submit-ask-btn').prop('disabled', false);
+                        // $('#question-input').prop('disabled', false);
+                    } else if (response.status === 'offline') {
+                        statusIndicator.text('Offline').removeClass('bg-secondary bg-success').addClass('bg-danger');
+                        statusMessage.text('(' + (response.message || 'Tidak dapat terhubung') + ')');
+                        // Anda bisa menonaktifkan form di sini jika server offline
+                        // $('#submit-ask-btn').prop('disabled', true);
+                        // $('#question-input').prop('disabled', true);
+                    } else {
+                        // Status tidak dikenal atau error dari backend
+                        statusIndicator.text('Error').removeClass('bg-secondary bg-success').addClass('bg-warning');
+                        statusMessage.text('(' + (response.message || 'Status tidak diketahui') + ')');
+                    }
+                } else {
+                    // Respons tidak valid dari server
+                    statusIndicator.text('Error').removeClass('bg-secondary bg-success').addClass('bg-warning');
+                    statusMessage.text('(Respons tidak valid)');
+                }
+            },
+            error: function(xhr, status, error) {
+                // Error saat melakukan AJAX call ke Yii2 (bukan status server target)
+                console.error("AJAX Error checking server status:", status, error);
+                statusIndicator.text('Error Cek').removeClass('bg-secondary bg-success').addClass('bg-warning');
+                statusMessage.text('(Gagal menghubungi pemeriksa status)');
+                 // Pertimbangkan untuk menonaktifkan form jika status tidak bisa dicek
+                 // $('#submit-ask-btn').prop('disabled', true);
+                 // $('#question-input').prop('disabled', true);
+            },
+            complete: function() {
+                 // Logika yang dijalankan setelah success atau error
+                 // Misalnya, jika Anda ingin mencoba lagi setelah beberapa waktu
+            }
+        });
+    }
+
+    // --- Panggil fungsi cek status saat halaman siap ---
+    checkServerStatus();
+    
+    
+    
+    
     // --- PERUBAHAN 1: Aktifkan tombol submit setelah dokumen siap ---
     $('#submit-ask-btn').prop('disabled', false);
 

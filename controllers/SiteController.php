@@ -43,7 +43,8 @@ class SiteController extends Controller
                 'actions' => [
                     'logout' => ['post'],
                     'upvote' => ['post'],
-                    'downvote' => ['post']
+                    'downvote' => ['post'],
+                    'check-server-status' => ['get'],
                 ],
             ],
         ];
@@ -108,6 +109,51 @@ class SiteController extends Controller
         return $this->render('index', [
             'model' => $model,
         ]);
+    }
+
+    /**
+     * Memeriksa status konektivitas server FastAPI.
+     * Mengembalikan status dalam format JSON.
+     */
+    /**
+     * Memeriksa status konektivitas server FastAPI.
+     * Mengembalikan status dalam format JSON.
+     */
+    public function actionCheckServerStatus()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        // --- Logika Penentuan Host dan Port Server Target ---
+        // Gunakan logika yang sama seperti di askFastAPI
+        $isLocalhost = in_array(Yii::$app->request->serverName, ['127.0.0.1', 'localhost']);
+        $apiUrl = $isLocalhost ? self::API_URL_LOCALHOST : self::API_URL_RENDER;
+
+        // Parse host dan port dari URL API yang relevan
+        $parsedUrl = parse_url($apiUrl);
+        $fastApiHost = $parsedUrl['host'] ?? null;
+        $fastApiPort = $parsedUrl['port'] ?? ($parsedUrl['scheme'] === 'https' ? 443 : 80); // Default port HTTP/HTTPS jika tidak ada
+
+        if (!$fastApiHost) {
+            Yii::error("Tidak dapat mem-parsing host dari API URL: " . $apiUrl, __METHOD__);
+            return ['status' => 'error', 'message' => 'Konfigurasi URL API tidak valid.'];
+        }
+
+        $timeout = 2; // Timeout koneksi dalam detik
+
+        // Gunakan fsockopen untuk cek koneksi TCP
+        // Tambahkan @ untuk menekan warning jika koneksi gagal
+        $fp = @fsockopen($fastApiHost, $fastApiPort, $errno, $errstr, $timeout);
+
+        if ($fp) {
+            // Koneksi berhasil dibuka, server dianggap online
+            fclose($fp);
+            Yii::info("Pengecekan status: Server $fastApiHost:$fastApiPort online.", __METHOD__);
+            return ['status' => 'online', 'message' => 'Server online'];
+        } else {
+            // Koneksi gagal
+            Yii::warning("Pengecekan status: Gagal koneksi ke $fastApiHost:$fastApiPort - $errstr ($errno)", __METHOD__);
+            return ['status' => 'offline', 'message' => "Server offline atau tidak merespon (Error: $errno)"];
+        }
     }
 
     private function askFastAPI(string $question): string
