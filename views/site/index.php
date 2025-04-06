@@ -10,7 +10,7 @@ use yii\helpers\Url;
 $this->title = 'DocuQuery';
 ?>
 <div class="site-index">
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h1><?= Html::encode($this->title) ?> (Prototype)</h1>
     <p>AI Chatbot Layanan Informasi Berbasis Dokumen</p>
 
     <table class="table table-bordered">
