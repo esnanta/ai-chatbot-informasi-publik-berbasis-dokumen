@@ -10,10 +10,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <div class="about-program">
     <h2>DocuQuery</h2>
-    <p>
-        Informasi yang diberikan oleh chatbot bersifat informatif dan tidak dapat dianggap
-        sebagai nasihat hukum.
-    </p>
+	<p>
+		DocuQuery adalah Document Q&A Bot. Fungsi utamanya adalah menjawab pertanyaan berdasarkan 
+		konten dokumen yang diberikan. Pengetahuannya terbatas pada korpus dokumen tersebut.
+	</p>
 
     <div class="alert alert-warning" role="alert">
         <ul>
