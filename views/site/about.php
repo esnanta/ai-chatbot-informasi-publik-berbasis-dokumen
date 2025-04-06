@@ -9,7 +9,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <div class="about-program">
-    <h2>AI Chatbot Berbasis Dokumen</h2>
+    <h2>DocuQuery</h2>
     <p>
         Informasi yang diberikan oleh chatbot bersifat informatif dan tidak dapat dianggap
         sebagai nasihat hukum.

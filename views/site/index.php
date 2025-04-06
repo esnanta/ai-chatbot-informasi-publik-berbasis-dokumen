@@ -38,12 +38,14 @@ $this->title = 'DocuQuery';
     <div style="position: relative;">
         <?= $form->field($model, 'question', [
             'template' => "{input}\n{label}\n{error}",
-            'options' => ['class' => 'form-floating']
-        ])->textInput([
+            'options' => ['class' => 'form-floating mb-3']
+        ])->textarea([
             'id' => 'question-input',
             'class' => 'form-control',
             'placeholder' => 'Ketik pertanyaan...',
-            'autocomplete' => 'off'
+            'autocomplete' => 'off',
+            //'rows' => 6,
+            'style' => 'height: 100px'
         ])->label('Pertanyaan') ?>
         <div id="suggestions" style="position: absolute; z-index: 1000; width: 100%;"></div>
     </div>
