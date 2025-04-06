@@ -1,75 +1,125 @@
-/*
-SQLyog Ultimate v13.1.1 (64 bit)
-MySQL - 10.4.32-MariaDB : Database - ai_chatbot_bos
-*********************************************************************
-*/
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Apr 06, 2025 at 06:33 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.1.25
 
-/*!40101 SET NAMES utf8 */;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
-/*!40101 SET SQL_MODE=''*/;
 
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`ai_chatbot_bos` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-USE `ai_chatbot_bos`;
+--
+-- Database: `ai_chatbot_bos`
+--
 
-/*Table structure for table `tx_qa_log` */
+-- --------------------------------------------------------
 
-DROP TABLE IF EXISTS `tx_qa_log`;
+--
+-- Table structure for table `tx_qa_log`
+--
 
 CREATE TABLE `tx_qa_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `question` longtext DEFAULT NULL,
-  `answer` longtext DEFAULT NULL,
-  `upvote` int(11) DEFAULT NULL,
-  `downvote` int(11) DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
+                             `id` int(11) NOT NULL,
+                             `question` longtext DEFAULT NULL,
+                             `answer` longtext DEFAULT NULL,
+                             `upvote` int(11) DEFAULT NULL,
+                             `downvote` int(11) DEFAULT NULL,
+                             `created_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `tx_qa_log` */
+-- --------------------------------------------------------
 
-/*Table structure for table `tx_suggestion` */
-
-DROP TABLE IF EXISTS `tx_suggestion`;
+--
+-- Table structure for table `tx_suggestion`
+--
 
 CREATE TABLE `tx_suggestion` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `question` text DEFAULT NULL,
-  `category` text DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `created_at` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+                                 `id` int(11) NOT NULL,
+                                 `question` text DEFAULT NULL,
+                                 `category` tinyint(4) DEFAULT NULL,
+                                 `description` text DEFAULT NULL,
+                                 `created_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-/*Data for the table `tx_suggestion` */
+--
+-- Dumping data for table `tx_suggestion`
+--
 
-insert  into `tx_suggestion`(`id`,`question`,`category`,`description`,`created_at`) values 
-(1,'Apa yang dimaksud dengan Dana BOSP?','Definisi','Pasal 1 (definition of Dana BOSP)','2025-03-24 22:04:13'),
-(2,'Apa yang dimaksud dengan Dana BOP PAUD?','Definisi','Pasal 1 (definition of Dana BOP PAUD)','2025-03-24 22:04:13'),
-(3,'Apa yang dimaksud dengan Dana BOS Reguler?','Definisi','Pasal 1 (definition of Dana BOS Reguler)','2025-03-24 22:04:13'),
-(4,'Apa yang dimaksud dengan Dana BOP Kesetaraan?','Definisi','Pasal 1 (definition of BOP Kesetaraan)','2025-03-24 22:04:13'),
-(5,'Apa perbedaan antara Dana BOS Reguler dan Dana BOS Kinerja?','Definisi','Pasal 1, Pasal 7 (definitions and types of BOS funds)','2025-03-24 22:04:13'),
-(6,'Apa yang dimaksud dengan Satuan Pendidikan?','Definisi','Pasal 1','2025-03-24 22:04:13'),
-(7,'Satuan Pendidikan apa saja yang menerima Dana BOS?','Kelayakan','Pasal 7 (lists eligible schools: SD, SMP, SMA, SLB, SMK)','2025-03-24 22:04:13'),
-(8,'Siapa yang menerima Dana BOP PAUD?','Kelayakan','Pasal 4','2025-03-24 22:04:13'),
-(9,'Sebutkan komponen dana BOS untuk prestasi.','Penggunaan Dana','RINCIAN KOMPONEN PENGGUNAAN\r\nDANA BANTUAN OPERASIONAL SATUAN PENDIDIKAN \r\nHal 5','2025-03-24 22:04:13'),
-(10,'Untuk apa saja Dana BOS Kinerja dapat digunakan?','Penggunaan Dana','Pasal 42 (detailed breakdown of uses, including for Program Sekolah Penggerak, schools with achievements, and schools with the best progress)','2025-03-24 22:04:13'),
-(11,'Komponen penggunaan Dana BOP PAUD Kinerja meliputi apa saja?','Penggunaan Dana','Pasal 37 (lists components: human resource development, independent curriculum learning, school digitization, data-based planning)','2025-03-24 22:04:13'),
-(12,'Bagaimana Dana BOS Kinerja digunakan untuk sekolah yang melaksanakan Program Sekolah Penggerak?','Penggunaan Dana','Pasal 42 (specifically addresses the use for Program Sekolah Penggerak)','2025-03-24 22:04:13'),
-(13,'Apa saja komponen penggunaan Dana BOS Reguler?','Penggunaan Dana','There is no specific pasal, because it is for general operational.','2025-03-24 22:04:13'),
-(14,'Apakah Dana BOSP dapat digunakan untuk pengembangan sumber daya manusia?','Penggunaan Dana','Pasal 37, Pasal 42 (this is a key component for Kinerja funds)','2025-03-24 22:04:13'),
-(15,'Apa itu pembelajaran kurikulum merdeka dalam penggunaan Dana BOSP?','Penggunaan Dana','Pasal 37, Pasal 42','2025-03-24 22:04:13'),
-(16,'Kapan laporan realisasi penggunaan Dana BOSP harus disampaikan?','Pelaporan & Administrasi','Pasal 51 (specifies deadlines: July 31 for the first stage, January 31 for the full year)','2025-03-24 22:04:13'),
-(17,'Bagaimana cara menyampaikan laporan realisasi penggunaan Dana BOSP?','Pelaporan & Administrasi','Pasal 51 (states that reports are submitted through the application system provided by the Ministry)','2025-03-24 22:04:13'),
-(18,'Apa yang dimaksud dengan RKAS dalam pengelolaan Dana BOSP?','Pelaporan & Administrasi','Pasal 1 angka 24','2025-03-24 22:04:13'),
-(19,'Apa yang dimaksud dengan Program Sekolah Penggerak?','Program Sekolah Penggerak','Pasal 1 (definition) and recurring throughout the document in the context of Dana BOS Kinerja.','2025-03-24 22:04:13'),
-(20,'Bagaimana sekolah pengimbas menggunakan Dana BOS Kinerja?','Program Sekolah Penggerak','Pasal 42','2025-03-24 22:04:13');
+INSERT INTO `tx_suggestion` (`id`, `question`, `category`, `description`, `created_at`) VALUES
+                                                                                            (1, 'Apa yang dimaksud dengan Satuan Pendidikan?', 1, 'Pasal 1 Angka 1', '2025-04-06 23:32:29'),
+                                                                                            (2, 'Apa yang dimaksud dengan Dana BOSP?', 1, 'Pasal 1 Angka 2', '2025-04-06 23:32:29'),
+                                                                                            (3, 'Apa itu Dana BOP PAUD?', 1, 'Pasal 1 Angka 4', '2025-04-06 23:32:29'),
+                                                                                            (4, 'Apa definisi Dana BOS?', 1, 'Pasal 1 Angka 5', '2025-04-06 23:32:29'),
+                                                                                            (5, 'Apa yang dimaksud Dana BOP PAUD Reguler?', 1, 'Pasal 1 Angka 7', '2025-04-06 23:32:29'),
+                                                                                            (6, 'Apa itu Dana BOS Reguler?', 1, 'Pasal 1 Angka 8', '2025-04-06 23:32:29'),
+                                                                                            (7, 'Apa itu Dana BOP Kesetaraan Reguler?', 1, 'Pasal 1 Angka 9', '2025-04-06 23:32:29'),
+                                                                                            (8, 'Apa itu Dana BOS Kinerja?', 1, 'Pasal 1 Angka 11', '2025-04-06 23:32:29'),
+                                                                                            (9, 'Apa yang dimaksud dengan Sekolah Terintegrasi?', 1, 'Pasal 1 Angka 22', '2025-04-06 23:32:29'),
+                                                                                            (10, 'Jelaskan tentang Program Sekolah Penggerak?', 1, 'Pasal 1 Angka 23', '2025-04-06 23:32:29'),
+                                                                                            (11, 'Satuan Pendidikan apa saja yang menyelenggarakan layanan PAUD dan dapat menerima Dana BOP PAUD?', 2, 'Pasal 4 ayat (2)', '2025-04-06 23:32:29'),
+                                                                                            (12, 'Satuan Pendidikan apa saja yang menjadi penerima Dana BOS?', 2, 'Pasal 7 ayat (1)', '2025-04-06 23:32:29'),
+                                                                                            (13, 'Bagaimana penghitungan Dana BOS Reguler untuk SLB, Sekolah Terintegrasi, dan Satuan Pendidikan di Daerah Khusus yang memiliki Peserta Didik kurang dari 60?', 2, 'Pasal 24', '2025-04-06 23:32:29'),
+                                                                                            (14, 'Apa kriteria Peserta Didik yang dihitung dalam alokasi Dana BOP Kesetaraan Reguler?', 2, 'Pasal 27 ayat (3)', '2025-04-06 23:32:29'),
+                                                                                            (15, 'Apa saja komponen penggunaan Dana BOP PAUD Kinerja?', 3, 'Pasal 37', '2025-04-06 23:32:29'),
+                                                                                            (16, 'Untuk apa Dana BOP PAUD Kinerja bagi Satuan Pendidikan yang melaksanakan Program Sekolah Penggerak yang ditetapkan sebagai pelaksana program pengimbasan?', 3, 'Pasal 37A', '2025-04-06 23:32:29'),
+                                                                                            (17, 'Apa saja komponen penggunaan Dana BOS Kinerja bagi sekolah yang melaksanakan Program Sekolah Penggerak?', 3, 'Pasal 42 ayat (2)', '2025-04-06 23:32:29'),
+                                                                                            (18, 'Apa komponen penggunaan Dana BOS Kinerja bagi sekolah yang memiliki prestasi?', 3, 'Pasal 42 ayat (3)', '2025-04-06 23:32:29'),
+                                                                                            (19, 'Apa komponen penggunaan Dana BOS Kinerja sekolah yang memiliki kemajuan terbaik?', 3, 'Pasal 42 ayat (6)', '2025-04-06 23:32:29'),
+                                                                                            (20, 'Apa saja komponen penggunaan Dana BOP Kesetaraan Kinerja?', 3, 'Pasal 45', '2025-04-06 23:32:29'),
+                                                                                            (21, 'Sebutkan contoh kegiatan pengembangan sumber daya manusia yang dibiayai Dana BOP PAUD Kinerja Sekolah Penggerak?', 3, 'Lampiran I Bagian B nomor 1 huruf a', '2025-04-06 23:32:29'),
+                                                                                            (22, 'Bagaimana cara Kepala Satuan Pendidikan menyampaikan laporan realisasi penggunaan Dana BOSP?', 4, 'Pasal 51 ayat (1)', '2025-04-06 23:32:29'),
+                                                                                            (23, 'Kapan batas waktu penyampaian laporan realisasi pengunaan Dana BOP PAUD Reguler, Dana BOS Reguler, atau Dana BOP Kesetaraan Reguler tahap I?', 4, 'Pasal 51 ayat (2) huruf a', '2025-04-06 23:32:29'),
+                                                                                            (24, 'Kapan batas waktu penyampaian laporan realisasi keseluruhan penggunaan Dana BOSP yang diterima dalam satu tahun anggaran?', 4, 'Pasal 51 ayat (2) huruf b', '2025-04-06 23:32:29'),
+                                                                                            (25, 'Apa yang digunakan sebagai dasar penyaluran Dana BOSP tahap I tahun berkenaan?', 4, 'Pasal 52a ayat (1)', '2025-04-06 23:32:29'),
+                                                                                            (26, 'Apa yang menjadi dasar penyaluran Dana BOSP tahap II tahun anggaran berkenaan?', 4, 'Pasal 52a ayat (2)', '2025-04-06 23:32:29'),
+                                                                                            (27, 'Jika sekolah saya baru ditetapkan sebagai Sekolah Penggerak, bagaimana saya semestinya memanfaatkan Dana BOS Kinerja yang diterima?', 5, 'Pasal 42 ayat (2), Lampiran I Bagian B nomor 3', '2025-04-06 23:32:29'),
+                                                                                            (28, 'Apakah penyaluran Dana BOS tahap kedua akan terhambat jika laporan tahap pertama belum selesai?', 5, 'Implikasi dari Pasal 52a ayat (2)', '2025-04-06 23:32:29'),
+                                                                                            (29, 'Sekolah kami di wilayah 3T (terdepan, terluar, tertinggal) dan murid SD hanya 45 orang, apakah perhitungan BOS Reguler tetap untuk 60 siswa?', 5, 'Implikasi dari Pasal 24 (Daerah Khusus)', '2025-04-06 23:32:29'),
+                                                                                            (30, 'Apakah Dana BOP Kesetaraan Kinerja boleh dipakai untuk workshop peningkatan kompetensi tutor dalam pembelajaran digital?', 5, 'Pasal 45 (interpretasi komponen)', '2025-04-06 23:32:29'),
+                                                                                            (31, 'Apa perbedaan fundamental antara alokasi Dana BOS Reguler dengan Dana BOS Kinerja?', 5, 'Pasal 1 Angka 8 vs Angka 11 (Tujuan Penggunaan)', '2025-04-06 23:32:29');
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `tx_qa_log`
+--
+ALTER TABLE `tx_qa_log`
+    ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `tx_suggestion`
+--
+ALTER TABLE `tx_suggestion`
+    ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `tx_qa_log`
+--
+ALTER TABLE `tx_qa_log`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `tx_suggestion`
+--
+ALTER TABLE `tx_suggestion`
+    MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
