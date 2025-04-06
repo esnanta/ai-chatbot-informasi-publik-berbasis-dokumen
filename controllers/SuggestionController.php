@@ -40,10 +40,12 @@ class SuggestionController extends Controller
     {
         $searchModel = new SuggestionSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        $categoryList   = Suggestion::getArrayCategory();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'categoryList' => $categoryList
         ]);
     }
 

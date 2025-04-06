@@ -41,7 +41,21 @@ $this->params['breadcrumbs'][] = $this->title;
                         );
                 },
             ],
-            'category:ntext',
+            [
+                'attribute' => 'category',
+                'value' => function ($model, $key, $index, $widget) {
+                    return ($model->category !== null && method_exists($model, 'getOneCategory'))
+                        ? $model->getOneCategory($model->category)
+                        : '';
+                },
+                'filter' => $categoryList,
+                'filterInputOptions' => [
+                    'class' => 'form-control',
+                    'id' => null
+                ],
+                'format' => 'raw',
+            ],
+            // --- AKHIR KOLOM CATEGORY ---
             'description:ntext',
             'created_at',
             [

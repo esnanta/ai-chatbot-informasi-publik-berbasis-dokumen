@@ -70,30 +70,22 @@ class Suggestion extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function getOneIsVisible($_module = null): string
+    public static function getOneCategory($_module = null): string
     {
         if($_module)
         {
             $arrayModule = self::getArrayCategory();
 
             switch ($_module) {
-                case ($_module == self::CATEGORY_DEFINITION):
-                    $returnValue = ($arrayModule[$_module];
-                    break;
-                case ($_module == self::CATEGORY_ADVISABILITY):
-                    $returnValue = ($arrayModule[$_module];
-                    break;
                 case ($_module == self::CATEGORY_UTILIZATION):
-                    $returnValue = ($arrayModule[$_module];
-                    break;
+                case ($_module == self::CATEGORY_ADVISABILITY):
                 case ($_module == self::CATEGORY_REPORTING):
-                    $returnValue = ($arrayModule[$_module];
-                    break;
                 case ($_module == self::CATEGORY_PROGRAM):
-                    $returnValue = ($arrayModule[$_module];
+                case ($_module == self::CATEGORY_DEFINITION):
+                    $returnValue = ($arrayModule[$_module]);
                     break;
                 default:
-                    $returnValue = ($arrayModule[$_module];
+                    $returnValue = ($arrayModule[$_module]);
             }
 
             return $returnValue;

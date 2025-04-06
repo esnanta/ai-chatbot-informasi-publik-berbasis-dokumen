@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'question:ntext',
-            'category:ntext',
+            'category',
             'description:ntext',
             'created_at',
         ],
