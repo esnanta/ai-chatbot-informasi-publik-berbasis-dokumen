@@ -7,20 +7,8 @@ Original file is located at
     https://colab.research.google.com/drive/10PKl_mX8F3fbFu3EEeftQ3aw5UyXXhSU
 
 # Introduction
-1. This system that relies on semantic similarity. It finds the text in the document that is most similar to the user's question.
-2. If the user's question doesn't closely resemble the way the information is expressed in the document, the system may not find the correct answer.
-
-## Further Development
-1. Clarifying Expectation, example :
-    * Chatbot: "Dana BOS digunakan untuk membiayai kegiatan operasional sekolah. Apakah Anda ingin mengetahui contoh kegiatan operasional yang dapat dibiayai oleh Dana BOS?"
-2. Provide a list of example questions that the user can ask. This shows them the types of questions the chatbot is good at answering. Example:
-    * Apa saja syarat pengajuan Dana BOS?
-    * Bagaimana cara melaporkan penggunaan Dana BOS?
-    * Sebutkan contoh kegiatan yang dapat dibiayai oleh Dana BOS.
-3. Keyword Suggestions: As the user types their question, suggest relevant keywords that they can include to make their question more specific.
-4. Intent Recognition (Advanced): Implement a simple intent recognition system. This would analyze the user's question and try to identify the intent behind it (e.g., "find allowed uses," "find reporting requirements"). Based on the intent, the chatbot could automatically rephrase the question to be more targeted. This requires more advanced natural language processing techniques.
-5. Expand the Training Data (If Possible): If you have the ability to add more data to the system, try to find documents that explicitly list the allowed uses of Dana BOS in a clear and structured way. This will make it easier for the semantic search to find the right information.
-6. Hybrid Approach (Advanced): Consider combining this semantic search approach with a more traditional keyword-based search. If the semantic search fails to find a good answer, the chatbot could fall back to a keyword search to find any relevant documents and present them to the user.
+- **Nama:** NANTHA SEUTIA
+- **Email:** ombakrinai@gmail.com
 
 # Import Library
 """
